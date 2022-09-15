@@ -124,7 +124,7 @@ while True:
         print(f"[{date()}] Found {len(all_flats)} flat in total:")
         for flat_elem in all_flats:
             flat = Flat(flat_elem.text)
-            with open("log.txt", "r") as myfile:
+            with open("log.txt", "ar") as myfile:
                 log = myfile.read()
             
             if str(flat.hash) not in log:
