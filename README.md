@@ -25,7 +25,7 @@ wbs_rooms: '2'
 zip_code: '12345'
 ```
 
-#Filtering
+# Filtering
 Currently the bot will apply to all available flats on the WBM website, which most of the time is only like one per every 3 days anyway..
 However a filtering feature is planned and will (probably) be implemented soon.
 
