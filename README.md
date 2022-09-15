@@ -4,6 +4,11 @@ A simple selenium based python bot to check the website of WBM Wohnungsbaugesell
 # Getting started
 To install all dependencies you can use the [`conda`](https://docs.conda.io/en/latest/) package manager and create an environment from the `environment.yaml` file located in the project directory as follows:
 ```
+# create conda environment form environment file
+conda env create -f environment.yaml
+
+# activate conda environment
+conda activate wbmbot
 ```
 If you don't have `conda` installed I recommend installing it or installing all dependencies manually (good luck with that).
 
