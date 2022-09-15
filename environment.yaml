@@ -1,0 +1,10 @@
+name: wbmbot
+channels:
+  - conda-forge
+  - default
+dependencies:
+  - pip
+  - pip:
+    - selenium
+    - pyyaml
+    - webdriver-manager
