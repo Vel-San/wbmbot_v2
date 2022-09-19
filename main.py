@@ -5,6 +5,7 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
+from sqlalchemy import true
 from webdriver_manager.chrome import ChromeDriverManager
 
 
@@ -103,11 +104,11 @@ else:
         except yaml.YAMLError as exc:
             print(f"[{date()}] Error opening config file! ")
 
-
+if not os.path.isfile('log.txt'): open('log.txt', 'a').close()
 
 while True:
 
-    start_url = "file:///home/david/wbmbot/index.html" if TEST else "https://www.wbm.de/wohnungen-berlin/angebote/"
+    start_url = f"file://{os.getcwd()}/test-data/index.html" if TEST else "https://www.wbm.de/wohnungen-berlin/angebote/"
     print(f"[{date()}] Connecting to ", start_url)
     driver.get(start_url)
 
@@ -121,12 +122,18 @@ while True:
     if all_flats:
 
         print(f"[{date()}] Found {len(all_flats)} flat in total:")
-        for flat_elem in all_flats:
+        for i in range(0,len(all_flats)):
+            time.sleep(2.5)
+            # we need to generate the flat_elem every ieration because otherwise they will go stale for some reason
+            all_flats = driver.find_elements(By.CSS_SELECTOR, ".row.openimmo-search-list-item")
+            flat_elem = all_flats[i]
             flat = Flat(flat_elem.text)
             with open("log.txt", "r") as myfile:
                 log = myfile.read()
             
             if str(flat.hash) not in log:
+                # check for wbs number
+                #if flat_elem.text:
                 print(f"[{date()}] Title: ", flat.title)
                 print(f"[{date()}] Looking for continue button..")
                 continue_btn = flat_elem.find_element(By.XPATH, '//*[@title="Details"]')
@@ -154,6 +161,8 @@ while True:
 
                 id += 1
                 print(f"[{date()}] Done!")
+                driver.back()
+                driver.back()
                 
                 time.sleep(2.5)
             else:
