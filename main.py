@@ -15,7 +15,7 @@ chrome_options.add_argument("--disable-extensions")
 chrome_options.add_argument("--disable-gpu")
 #chrome_options.add_argument("--no-sandbox") # linux only
 #chrome_options.add_argument("--headless")
-chrome_options.headless = True # also works
+#chrome_options.headless = True # also works
 driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
 driver.implicitly_wait(5)
 
@@ -26,6 +26,7 @@ def date():
 flats = []
 id = 0
 TEST = (len(sys.argv) > 1 and 'test' in sys.argv[1])
+if TEST: print("------------------TEST RUN------------------")
 
 class Flat:
   def __init__(self, flat_elem):
@@ -86,7 +87,17 @@ def setup():
     with open('config.yaml', 'w') as outfile:
         yaml.dump(data, outfile, default_flow_style=False)
 
+def next_page(page_num):
+    page_list = driver.find_element(By.XPATH, "/html/body/main/div[2]/div[1]/div/nav/ul")
+    if driver.find_elements(By.XPATH, '/html/body/main/div[2]/div[1]/div/nav/ul/li[4]/a'):
+        print(f"[{date()}] Another page of flats was detected, switching to page {page_num +1}/{len(page_list.find_elements(By.TAG_NAME, 'li'))-2}..")
+        driver.find_element(By.XPATH, '/html/body/main/div[2]/div[1]/div/nav/ul/li[4]/a').click()
+        return page_num + 1
+    else:
+        print(f"[{date()}] Failed to switch page, there is only one page..")
 
+
+# check if config exists, else start setup
 if os.path.isfile("config.yaml"):
     print(f"[{date()}] Loading config..")
     with open("config.yaml", "r") as config:
@@ -108,7 +119,7 @@ if not os.path.isfile('log.txt'): open('log.txt', 'a').close()
 
 while True:
 
-    start_url = f"file://{os.getcwd()}/test-data/index.html" if TEST else "https://www.wbm.de/wohnungen-berlin/angebote/"
+    start_url = f"file://{os.getcwd()}/test-data/wohnung_mehrere_seiten.html" if TEST else "https://www.wbm.de/wohnungen-berlin/angebote/"
     print(f"[{date()}] Connecting to ", start_url)
     driver.get(start_url)
 
@@ -121,9 +132,11 @@ while True:
     
     if all_flats:
 
-        print(f"[{date()}] Found {len(all_flats)} flat in total:")
+        print(f"[{date()}] Found {len(all_flats)-1} flat(s) in total:")
         for i in range(0,len(all_flats)):
             time.sleep(2.5)
+
+
             # we need to generate the flat_elem every ieration because otherwise they will go stale for some reason
             all_flats = driver.find_elements(By.CSS_SELECTOR, ".row.openimmo-search-list-item")
             flat_elem = all_flats[i]
@@ -161,12 +174,14 @@ while True:
 
                 id += 1
                 print(f"[{date()}] Done!")
-                driver.back()
-                driver.back()
+                driver.get(start_url)
                 
                 time.sleep(2.5)
             else:
                 print(f"[{date()}] Oops, we already applied for flat: {flat.title}, with ID: {id}!")
+
+            if i == len(all_flats)-1: 
+                next_page()
     else:
         print(f"[{date()}] Currently no flats available :(")
 
