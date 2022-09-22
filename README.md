@@ -10,7 +10,7 @@ conda env create -f environment.yaml
 # activate conda environment
 conda activate wbmbot
 ```
-If you don't have `conda` installed I recommend installing it or installing all dependencies manually (good luck with that).
+If you don't have `conda` installed I recommend installing it or installing all dependencies manually (good luck with that). Alternatively you can install the dependencies using `pip`, since all of them should be available on there too.
 
 
 To start the bot simply run the below command in your terminal in the project directory:

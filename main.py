@@ -5,7 +5,6 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
-from sqlalchemy import true
 from webdriver_manager.chrome import ChromeDriverManager
 
 
@@ -25,6 +24,8 @@ def date():
 
 flats = []
 id = 0
+curr_page_num = 1
+page_changed = False
 TEST = (len(sys.argv) > 1 and 'test' in sys.argv[1])
 if TEST: print("------------------TEST RUN------------------")
 
@@ -87,15 +88,41 @@ def setup():
     with open('config.yaml', 'w') as outfile:
         yaml.dump(data, outfile, default_flow_style=False)
 
-def next_page(page_num):
+def next_page(curr_page_num):
     page_list = driver.find_element(By.XPATH, "/html/body/main/div[2]/div[1]/div/nav/ul")
     if driver.find_elements(By.XPATH, '/html/body/main/div[2]/div[1]/div/nav/ul/li[4]/a'):
-        print(f"[{date()}] Another page of flats was detected, switching to page {page_num +1}/{len(page_list.find_elements(By.TAG_NAME, 'li'))-2}..")
-        driver.find_element(By.XPATH, '/html/body/main/div[2]/div[1]/div/nav/ul/li[4]/a').click()
-        return page_num + 1
+        print(f"[{date()}] Another page of flats was detected, switching to page {curr_page_num +1}/{len(page_list.find_elements(By.TAG_NAME, 'li'))-2}..")
+        try:
+            page_list.find_elements(By.TAG_NAME, 'li')[curr_page_num + 1].click()
+            return curr_page_num + 1
+        except:
+            print(f"[{date()}] Failed to switch page, returning to main page..")
+            return curr_page_num
     else:
-        print(f"[{date()}] Failed to switch page, there is only one page..")
+        print(f"[{date()}] Failed to switch page, lastpage reached..")
+        return curr_page_num
 
+def continue_btn():
+    print(f"[{date()}] Looking for continue button..")
+    continue_btn = flat_elem.find_element(By.XPATH, '//*[@title="Details"]')
+    print(f"[{date()}] Flat link found: ", continue_btn.get_attribute('href'))
+    continue_btn.location_once_scrolled_into_view
+    driver.get(continue_btn.get_attribute('href'))
+
+def fill_form():
+    print(f"[{date()}] Filling out form..")
+    driver.find_element(By.XPATH, '//*[@id="c722"]/div/div/form/div[2]/div[1]/div/div/div[1]/label').click()
+    driver.find_element(By.XPATH, '//*[@id="powermail_field_wbsgueltigbis"]').send_keys(user.wbs_date)
+    driver.find_element(By.XPATH, '//*[@id="powermail_field_wbszimmeranzahl"]').send_keys(user.wbs_rooms)
+    driver.find_element(By.XPATH, '//*[@id="powermail_field_einkommensgrenzenacheinkommensbescheinigung9"]').send_keys(user.wbs_num)
+    driver.find_element(By.XPATH, '//*[@id="powermail_field_name"]').send_keys(user.last_name)
+    driver.find_element(By.XPATH, '//*[@id="powermail_field_vorname"]').send_keys(user.first_name)
+    driver.find_element(By.XPATH, '//*[@id="powermail_field_strasse"]').send_keys(user.street)
+    driver.find_element(By.XPATH, '//*[@id="powermail_field_plz"]').send_keys(user.zip_code)
+    driver.find_element(By.XPATH, '//*[@id="powermail_field_ort"]').send_keys(user.city)
+    driver.find_element(By.XPATH, '//*[@id="powermail_field_e_mail"]').send_keys(user.email)
+    driver.find_element(By.XPATH, '//*[@id="powermail_field_telefon"]').send_keys(user.phone)
+    driver.find_element(By.XPATH, '//*[@id="c722"]/div/div/form/div[2]/div[14]/div/div/div[1]/label').click()
 
 # check if config exists, else start setup
 if os.path.isfile("config.yaml"):
@@ -117,72 +144,87 @@ else:
 
 if not os.path.isfile('log.txt'): open('log.txt', 'a').close()
 
+start_url = f"file://{os.getcwd()}/test-data/wohnung_mehrere_seiten.html" if TEST else "https://www.wbm.de/wohnungen-berlin/angebote/"
+
+
 while True:
 
-    start_url = f"file://{os.getcwd()}/test-data/wohnung_mehrere_seiten.html" if TEST else "https://www.wbm.de/wohnungen-berlin/angebote/"
     print(f"[{date()}] Connecting to ", start_url)
-    driver.get(start_url)
 
+    # If we are on same page as last iteration, there probably is only one page or last page was reached and we want to reload the first page
+    if not page_changed:
+        driver.get(start_url)
+        curr_page_num = 1
+        prev_page_num = 1
+
+    # Check if cookie dialog is displayed and accept if so
     if len(driver.find_elements(By.XPATH, '//*[@id="cdk-overlay-0"]/div[2]/div[2]/div[2]/button[2]')) > 0:
         print(f"[{date()}] Accepting cookies..")
         driver.find_element(By.XPATH, '//*[@id="cdk-overlay-0"]/div[2]/div[2]/div[2]/button[2]').click()
     
+    # Find all flat offers displayed on current page
     print(f"[{date()}] Looking for flats..")
     all_flats = driver.find_elements(By.CSS_SELECTOR, ".row.openimmo-search-list-item")
     
+    # If there is at least one flat start further checks
     if all_flats:
 
-        print(f"[{date()}] Found {len(all_flats)-1} flat(s) in total:")
+        print(f"[{date()}] Found {len(all_flats)} flat(s) in total:")
+
+        # For every flat do checks
         for i in range(0,len(all_flats)):
-            time.sleep(2.5)
+            
+            time.sleep(1.5)
 
-
-            # we need to generate the flat_elem every ieration because otherwise they will go stale for some reason
+            # We need to generate the flat_elem every iteration because otherwise they will go stale for some reason
             all_flats = driver.find_elements(By.CSS_SELECTOR, ".row.openimmo-search-list-item")
             flat_elem = all_flats[i]
+            
+            # Create flat object
             flat = Flat(flat_elem.text)
+
+            # Open log file
             with open("log.txt", "r") as myfile:
                 log = myfile.read()
             
+            # Check if we already applied to flat by looking for its unique hash in the log file
             if str(flat.hash) not in log:
                 # check for wbs number
                 #if flat_elem.text:
+
                 print(f"[{date()}] Title: ", flat.title)
-                print(f"[{date()}] Looking for continue button..")
-                continue_btn = flat_elem.find_element(By.XPATH, '//*[@title="Details"]')
-                print(f"[{date()}] Flat link found: ", continue_btn.get_attribute('href'))
-                continue_btn.location_once_scrolled_into_view
-                driver.get(continue_btn.get_attribute('href'))
-                print(f"[{date()}] Filling out form..")
-                driver.find_element(By.XPATH, '//*[@id="c722"]/div/div/form/div[2]/div[1]/div/div/div[1]/label').click()
-                driver.find_element(By.XPATH, '//*[@id="powermail_field_wbsgueltigbis"]').send_keys(user.wbs_date)
-                driver.find_element(By.XPATH, '//*[@id="powermail_field_wbszimmeranzahl"]').send_keys(user.wbs_rooms)
-                driver.find_element(By.XPATH, '//*[@id="powermail_field_einkommensgrenzenacheinkommensbescheinigung9"]').send_keys(user.wbs_num)
-                driver.find_element(By.XPATH, '//*[@id="powermail_field_name"]').send_keys(user.last_name)
-                driver.find_element(By.XPATH, '//*[@id="powermail_field_vorname"]').send_keys(user.first_name)
-                driver.find_element(By.XPATH, '//*[@id="powermail_field_strasse"]').send_keys(user.street)
-                driver.find_element(By.XPATH, '//*[@id="powermail_field_plz"]').send_keys(user.zip_code)
-                driver.find_element(By.XPATH, '//*[@id="powermail_field_ort"]').send_keys(user.city)
-                driver.find_element(By.XPATH, '//*[@id="powermail_field_e_mail"]').send_keys(user.email)
-                driver.find_element(By.XPATH, '//*[@id="powermail_field_telefon"]').send_keys(user.phone)
-                driver.find_element(By.XPATH, '//*[@id="c722"]/div/div/form/div[2]/div[14]/div/div/div[1]/label').click()
 
-                if not TEST: driver.find_element(By.XPATH, '//*[@id="c722"]/div/div/form/div[2]/div[15]/div/div/button').click()
+                # Find and click continue button on current flat
+                continue_btn()
 
+                # Fill out application form on current flat using info stored in user object
+                fill_form()
+                
+                # Submit form
+                driver.find_element(By.XPATH, '//*[@id="c722"]/div/div/form/div[2]/div[15]/div/div/button').click()
+
+                # Write flat info to log file
                 with open("log.txt", "a") as myfile:
                     myfile.write(f"[{date()}] - ID: {id}\nApplication sent for flat:\n{flat.title}\n{flat.street}\n{flat.city + ' ' + flat.zip_code}\ntotal rent: {flat.total_rent}\nflat size: {flat.size}\nrooms: {flat.rooms}\nwbs: {flat.wbs}\nhash: {flat.hash}\n\n")
 
+                # Increment id (not really used anymore)
                 id += 1
                 print(f"[{date()}] Done!")
-                driver.get(start_url)
                 
-                time.sleep(2.5)
+                time.sleep(1.5)
+
             else:
+                # Flats hash was found in log file
                 print(f"[{date()}] Oops, we already applied for flat: {flat.title}, with ID: {id}!")
 
+            # We checked all flats on this page, try to switch to next page if exists. This should be called in last iteration
             if i == len(all_flats)-1: 
-                next_page()
+                prev_page_num = curr_page_num
+                curr_page_num = next_page(curr_page_num)
+                page_changed = curr_page_num != prev_page_num
+
     else:
+        # List of flats is empty there is no flat displayed on current page
         print(f"[{date()}] Currently no flats available :(")
 
     time.sleep(5 * 60)
