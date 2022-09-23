@@ -178,6 +178,8 @@ while True:
 
             # We need to generate the flat_elem every iteration because otherwise they will go stale for some reason
             all_flats = driver.find_elements(By.CSS_SELECTOR, ".row.openimmo-search-list-item")
+            print("i: ", i)
+            print("flat_list.: ", len(all_flats))
             flat_elem = all_flats[i]
             
             # Create flat object
@@ -212,6 +214,8 @@ while True:
                 print(f"[{date()}] Done!")
                 
                 time.sleep(1.5)
+                driver.get(start_url)
+
 
             else:
                 # Flats hash was found in log file
