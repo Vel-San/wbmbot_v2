@@ -89,8 +89,8 @@ def setup():
         yaml.dump(data, outfile, default_flow_style=False)
 
 def next_page(curr_page_num):
-    page_list = driver.find_element(By.XPATH, "/html/body/main/div[2]/div[1]/div/nav/ul")
     if driver.find_elements(By.XPATH, '/html/body/main/div[2]/div[1]/div/nav/ul/li[4]/a'):
+        page_list = driver.find_element(By.XPATH, "/html/body/main/div[2]/div[1]/div/nav/ul")
         print(f"[{date()}] Another page of flats was detected, switching to page {curr_page_num +1}/{len(page_list.find_elements(By.TAG_NAME, 'li'))-2}..")
         try:
             page_list.find_elements(By.TAG_NAME, 'li')[curr_page_num + 1].click()
