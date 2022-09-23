@@ -90,7 +90,7 @@ def setup():
             keyword = input("Please enter a keyword and confirm with enter, type 'exit' to exit: ")
             filter += keyword.lower()
             filter += ','
-        data['filter'] = filter[:-1].replace('exit','')
+        data['filter'] = filter.replace(',exit,','')
 
     print(f"[{date()}]Done! Writing config file..")
 
