@@ -55,6 +55,7 @@ class User:
       self.wbs = True if 'yes' in config['wbs'] else False
       self.wbs_date = config['wbs_date'].replace('/', '')
       self.wbs_rooms = config['wbs_rooms']
+      self.filter = config['filter'].split(',')
       
       if '100' in config['wbs_num']:
         self.wbs_num = 'WBS 100'
@@ -82,6 +83,14 @@ def setup():
         data['wbs_date'] = input("Until when will the WBS be valid?\nPlease enter the date in format month/day/year: ")
         data['wbs_num'] = input("What WBS number (Einkommensgrenze nach Einkommensbescheinigung § 9) does your WBS show?\nPlease enter WBS 100 / WBS 140 / WBS 160 / WBS 180: ")
         data['wbs_rooms'] = input("For how many rooms is your WBS valid?\nPlease enter a number: ")
+    if 'yes' in input("Do you want to enter keywords to exclude specific flats from the search results?\nPlease type yes / no: "):
+        keyword = ''
+        filter = ''
+        while 'exit' not in keyword:
+            keyword = input("Please enter a keyword and confirm with enter, type 'exit' to exit: ")
+            filter += keyword.lower()
+            filter += ','
+        data['filter'] = filter[:-1].replace('exit','')
 
     print(f"[{date()}]Done! Writing config file..")
 
@@ -189,32 +198,35 @@ while True:
             
             # Check if we already applied to flat by looking for its unique hash in the log file
             if str(flat.hash) not in log:
-                # check for wbs number
-                #if flat_elem.text:
 
-                print(f"[{date()}] Title: ", flat.title)
+                # Check if we omit flat because of filter keyword contained
+                if any(str(keyword) in log.lower() for keyword in user.filter):
+                    print(f"[{date()}] Ignoring flat '{flat.title}' because it contains filter keyword(s).")
+                else:
+                    # check for wbs number
+                    #if flat_elem.text:
 
-                # Find and click continue button on current flat
-                continue_btn()
+                    print(f"[{date()}] Title: ", flat.title)
 
-                # Fill out application form on current flat using info stored in user object
-                fill_form()
-                
-                # Submit form
-                driver.find_element(By.XPATH, '//*[@id="c722"]/div/div/form/div[2]/div[15]/div/div/button').click()
+                    # Find and click continue button on current flat
+                    continue_btn()
 
-                # Write flat info to log file
-                with open("log.txt", "a") as myfile:
-                    myfile.write(f"[{date()}] - ID: {id}\nApplication sent for flat:\n{flat.title}\n{flat.street}\n{flat.city + ' ' + flat.zip_code}\ntotal rent: {flat.total_rent}\nflat size: {flat.size}\nrooms: {flat.rooms}\nwbs: {flat.wbs}\nhash: {flat.hash}\n\n")
+                    # Fill out application form on current flat using info stored in user object
+                    fill_form()
+                    
+                    # Submit form
+                    driver.find_element(By.XPATH, '//*[@id="c722"]/div/div/form/div[2]/div[15]/div/div/button').click()
 
-                # Increment id (not really used anymore)
-                id += 1
-                print(f"[{date()}] Done!")
-                
-                time.sleep(1.5)
-                driver.get(start_url)
+                    # Write flat info to log file
+                    with open("log.txt", "a") as myfile:
+                        myfile.write(f"[{date()}] - ID: {id}\nApplication sent for flat:\n{flat.title}\n{flat.street}\n{flat.city + ' ' + flat.zip_code}\ntotal rent: {flat.total_rent}\nflat size: {flat.size}\nrooms: {flat.rooms}\nwbs: {flat.wbs}\nhash: {flat.hash}\n\n")
 
-
+                    # Increment id (not really used anymore)
+                    id += 1
+                    print(f"[{date()}] Done!")
+                    
+                    time.sleep(1.5)
+                    driver.get(start_url)
             else:
                 # Flats hash was found in log file
                 print(f"[{date()}] Oops, we already applied for flat: {flat.title}, with ID: {id}!")
