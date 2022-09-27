@@ -200,7 +200,7 @@ while True:
             if str(flat.hash) not in log:
 
                 # Check if we omit flat because of filter keyword contained
-                if any(str(keyword) in log.lower() for keyword in user.filter):
+                if any(str(keyword) in flat_elem.text.lower() for keyword in user.filter):
                     print(f"[{date()}] Ignoring flat '{flat.title}' because it contains filter keyword(s).")
                 else:
                     # check for wbs number
