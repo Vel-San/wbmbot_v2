@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+from email.policy import default
 import sys, time, datetime, hashlib, yaml, os.path
 from selenium import webdriver 
 from selenium.webdriver.chrome.options import Options
@@ -8,13 +9,19 @@ from selenium.webdriver.common.by import By
 from webdriver_manager.chrome import ChromeDriverManager
 
 
+from argparse import ArgumentParser
+
+parser = ArgumentParser()
+parser.add_argument("-H", "--headless_off", help="If set, turn off headless run. The bot will run in the opened browser.", action='store_false')
+parser.add_argument("-t", "--test", action='store_true', help="If set, run test-run on the test data. This does not actually connect to wbm.de.")
+
+args = parser.parse_args()
+
 
 chrome_options = Options()
 chrome_options.add_argument("--disable-extensions")
 chrome_options.add_argument("--disable-gpu")
-#chrome_options.add_argument("--no-sandbox") # linux only
-#chrome_options.add_argument("--headless")
-chrome_options.headless = True # also works
+chrome_options.headless = args.headless_off
 driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
 driver.implicitly_wait(5)
 
@@ -26,7 +33,7 @@ flats = []
 id = 0
 curr_page_num = 1
 page_changed = False
-TEST = (len(sys.argv) > 1 and 'test' in sys.argv[1])
+TEST = args.test
 if TEST: print("------------------TEST RUN------------------")
 
 class Flat:
@@ -241,7 +248,11 @@ while True:
         # List of flats is empty there is no flat displayed on current page
         print(f"[{date()}] Currently no flats available :(")
 
-    time.sleep(5 * 60)
+    if not page_changed : 
+        time.sleep(5 * 60)
+    else:
+        time.sleep(1.5)
+
     print(f"[{date()}] Reloading main page..")
 
 #driver.quit()
