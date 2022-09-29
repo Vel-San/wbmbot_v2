@@ -24,8 +24,9 @@ If you don't want to use the setup process for this, you can just create a `conf
 
 ```
 city: "cityname"
-email: "email@adress"
+email: "email@adress1,email@adress2,..."
 first_name: "Max"
+filter: "keyword1,keyword2,..."
 last_name: "Mustermann"
 phone: "0123456789"
 street: "Streetname 42"
@@ -36,12 +37,24 @@ wbs_rooms: '2'
 zip_code: '12345'
 ```
 
+# Parameters
+```
+usage: main.py [-h] [-H] [-t] [-i INTERVAL]
+
+optional arguments:
+  -h, --help            Show this help message and exit.
+  -H, --headless_off    If set, turn off headless run. The bot will run in the opened browser.
+  -t, --test            If set, run test-run on the test data. This does not actually connect to wbm.de.
+  -i, --interval        Set the time interval in minutes to check for new flats on wbm.de. [default: 5]
+```
+
 # Filtering
 Currently the bot will apply to all available flats on the WBM website, which most of the time is only like one per every 3 days anyway..
 However a filtering feature is planned and will (probably) be implemented soon.
 
 # Additional
 The bot will save all successfull applications to a `log.txt` file. This file is also used to apply to every flat only once, so don't delete it unless you want to reapply to all available flats!
+During the setupt process you will be able to submit multiple email adresses. The bot will then apply for every flat with your user data once per email adress.
 Per default wbm.de will be reloaded and checked for new flats every 5 minutes. There currently is no timeout or bot check / captcha on the website (lets hope it stays like this), but I dont think its necessary to check more often, as there are not many flats available anyway (in contrast to e.g. immoscout24).
 
 Let the hunt begin! Good luck!
