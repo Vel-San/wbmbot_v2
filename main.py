@@ -12,8 +12,9 @@ from webdriver_manager.chrome import ChromeDriverManager
 from argparse import ArgumentParser
 
 parser = ArgumentParser()
-parser.add_argument("-H", "--headless_off", help="If set, turn off headless run. The bot will run in the opened browser.", action='store_false')
+parser.add_argument("-H", "--headless_off", action='store_false', help="If set, turn off headless run. The bot will run in the opened browser.")
 parser.add_argument("-t", "--test", action='store_true', help="If set, run test-run on the test data. This does not actually connect to wbm.de.")
+parser.add_argument("-i", "--interval", default=5, help="Set the time interval in minutes to check for new flats on wbm.de. [default: 5]")
 
 args = parser.parse_args()
 
@@ -57,7 +58,7 @@ class User:
       self.street = config['street']
       self.zip_code = config['zip_code']
       self.city = config['city']
-      self.email = config['email']
+      self.email = config['email'].split(',')
       self.phone = config['phone']
       self.wbs = True if 'yes' in config['wbs'] else False
       self.wbs_date = config['wbs_date'].replace('/', '')
@@ -80,7 +81,13 @@ def setup():
     data = {}
     data['first_name'] = input("Please input your first name and confirm with enter: ")
     data['last_name'] = input("Please input your last name and confirm with enter: ")
-    data['email'] = input("Please input your email adress and confirm with enter: ")
+    email, email_ls, c = '', '', 1
+    while 'exit' not in email:
+        email = input(f"Please input email adress {c} and confirm with enter, type 'exit' to exit: ")
+        email_ls += email.lower()
+        email_ls += ','
+        c += 1
+    data['email'] = email_ls.replace(',exit,','')
     data['street'] = input("Please input your street and confirm with enter or leave empty and skip with enter: ")
     data['zip_code'] = input("Please input your zip_code and confirm with enter or leave empty and skip with enter: ")
     data['city'] = input("Please input your city and confirm with enter or leave empty and skip with enter: ")
@@ -90,14 +97,19 @@ def setup():
         data['wbs_date'] = input("Until when will the WBS be valid?\nPlease enter the date in format month/day/year: ")
         data['wbs_num'] = input("What WBS number (Einkommensgrenze nach Einkommensbescheinigung § 9) does your WBS show?\nPlease enter WBS 100 / WBS 140 / WBS 160 / WBS 180: ")
         data['wbs_rooms'] = input("For how many rooms is your WBS valid?\nPlease enter a number: ")
+    else:
+        data['wbs_date'] = ''
+        data['wbs_num'] = ''
+        data['wbs_rooms'] = ''
     if 'yes' in input("Do you want to enter keywords to exclude specific flats from the search results?\nPlease type yes / no: "):
-        keyword = ''
-        filter = ''
+        keyword, filter = '', ''
         while 'exit' not in keyword:
             keyword = input("Please enter a keyword and confirm with enter, type 'exit' to exit: ")
             filter += keyword.lower()
             filter += ','
         data['filter'] = filter.replace(',exit,','')
+    else:
+        data['filter'] = ''
 
     print(f"[{date()}]Done! Writing config file..")
 
@@ -125,8 +137,8 @@ def continue_btn():
     continue_btn.location_once_scrolled_into_view
     driver.get(continue_btn.get_attribute('href'))
 
-def fill_form():
-    print(f"[{date()}] Filling out form..")
+def fill_form(email):
+    print(f"[{date()}] Filling out form for email adress '{email}' ..")
     driver.find_element(By.XPATH, '//*[@id="c722"]/div/div/form/div[2]/div[1]/div/div/div[1]/label').click()
     driver.find_element(By.XPATH, '//*[@id="powermail_field_wbsgueltigbis"]').send_keys(user.wbs_date)
     driver.find_element(By.XPATH, '//*[@id="powermail_field_wbszimmeranzahl"]').send_keys(user.wbs_rooms)
@@ -136,7 +148,7 @@ def fill_form():
     driver.find_element(By.XPATH, '//*[@id="powermail_field_strasse"]').send_keys(user.street)
     driver.find_element(By.XPATH, '//*[@id="powermail_field_plz"]').send_keys(user.zip_code)
     driver.find_element(By.XPATH, '//*[@id="powermail_field_ort"]').send_keys(user.city)
-    driver.find_element(By.XPATH, '//*[@id="powermail_field_e_mail"]').send_keys(user.email)
+    driver.find_element(By.XPATH, '//*[@id="powermail_field_e_mail"]').send_keys(email)
     driver.find_element(By.XPATH, '//*[@id="powermail_field_telefon"]').send_keys(user.phone)
     driver.find_element(By.XPATH, '//*[@id="c722"]/div/div/form/div[2]/div[14]/div/div/div[1]/label').click()
 
@@ -204,39 +216,43 @@ while True:
                 log = myfile.read()
             
             # Check if we already applied to flat by looking for its unique hash in the log file
-            if str(flat.hash) not in log:
+            for email in user.email:
 
-                # Check if we omit flat because of filter keyword contained
-                if any(str(keyword) in flat_elem.text.lower() for keyword in user.filter):
-                    print(f"[{date()}] Ignoring flat '{flat.title}' because it contains filter keyword(s).")
+                # We need to generate the flat_elem every iteration because otherwise they will go stale for some reason
+                all_flats = driver.find_elements(By.CSS_SELECTOR, ".row.openimmo-search-list-item")
+                flat_elem = all_flats[i]
+                if (str(flat.hash) + str(email).strip()) not in log:
+
+                    # Check if we omit flat because of filter keyword contained
+                    if any(str(keyword).strip() in flat_elem.text.lower() for keyword in user.filter):
+                        print(f"[{date()}] Ignoring flat '{flat.title}' because it contains filter keyword(s).")
+                        break
+                    else:
+                        print(f"[{date()}] Title: ", flat.title)
+
+                        # Find and click continue button on current flat
+                        continue_btn()
+
+                        # Fill out application form on current flat using info stored in user object
+                        fill_form(str(email).strip())
+                        
+                        # Submit form
+                        driver.find_element(By.XPATH, '//*[@id="c722"]/div/div/form/div[2]/div[15]/div/div/button').click()
+
+                        # Write flat info to log file
+                        with open("log.txt", "a") as myfile:
+                            myfile.write(f"[{date()}] - ID: {id}\nApplication sent for flat:\n{flat.title}\n{flat.street}\n{flat.city + ' ' + flat.zip_code}\ntotal rent: {flat.total_rent}\nflat size: {flat.size}\nrooms: {flat.rooms}\nwbs: {flat.wbs}\nhash: {flat.hash}{str(email).strip()}\n\n")
+
+                        # Increment id (not really used anymore)
+                        id += 1
+                        print(f"[{date()}] Done!")
+                        
+                        time.sleep(1.5)
+                        driver.get(start_url)
                 else:
-                    # check for wbs number
-                    #if flat_elem.text:
-
-                    print(f"[{date()}] Title: ", flat.title)
-
-                    # Find and click continue button on current flat
-                    continue_btn()
-
-                    # Fill out application form on current flat using info stored in user object
-                    fill_form()
-                    
-                    # Submit form
-                    driver.find_element(By.XPATH, '//*[@id="c722"]/div/div/form/div[2]/div[15]/div/div/button').click()
-
-                    # Write flat info to log file
-                    with open("log.txt", "a") as myfile:
-                        myfile.write(f"[{date()}] - ID: {id}\nApplication sent for flat:\n{flat.title}\n{flat.street}\n{flat.city + ' ' + flat.zip_code}\ntotal rent: {flat.total_rent}\nflat size: {flat.size}\nrooms: {flat.rooms}\nwbs: {flat.wbs}\nhash: {flat.hash}\n\n")
-
-                    # Increment id (not really used anymore)
-                    id += 1
-                    print(f"[{date()}] Done!")
-                    
-                    time.sleep(1.5)
-                    driver.get(start_url)
-            else:
-                # Flats hash was found in log file
-                print(f"[{date()}] Oops, we already applied for flat: {flat.title}, with ID: {id}!")
+                    # Flats hash was found in log file
+                    print(f"[{date()}] Oops, we already applied for flat: {flat.title}, with ID: {id}!")
+                    break
 
             # We checked all flats on this page, try to switch to next page if exists. This should be called in last iteration
             if i == len(all_flats)-1: 
@@ -249,7 +265,7 @@ while True:
         print(f"[{date()}] Currently no flats available :(")
 
     if not page_changed : 
-        time.sleep(5 * 60)
+        time.sleep(args.interval * 60)
     else:
         time.sleep(1.5)
 
