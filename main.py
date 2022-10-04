@@ -40,14 +40,15 @@ if TEST: print("------------------TEST RUN------------------")
 class Flat:
   def __init__(self, flat_elem):
       flat_attr = flat_elem.split('\n')
-      self.title = flat_attr[0]
-      self.district = flat_attr[4]
-      self.street = flat_attr[5]
-      self.zip_code = flat_attr[6].split(' ')[0]
-      self.city = flat_attr[6].split(' ')[1]
-      self.total_rent = flat_attr[8]
-      self.size = flat_attr[10]
-      self.rooms = flat_attr[12]
+      attr_size = len(flat_attr)
+      self.title = if attr_size > 0 flat_attr[0] else ''
+      self.district = if attr_size > 4 flat_attr[4] else ''
+      self.street = if attr_size > 5 flat_attr[5] else ''
+      self.zip_code = if attr_size > 6 flat_attr[6].split(' ')[0] else ''
+      self.city = if attr_size > 6 flat_attr[6].split(' ')[1] else ''
+      self.total_rent = if attr_size > 8 flat_attr[8] else ''
+      self.size = if attr_size > 10 flat_attr[10] else ''
+      self.rooms =  if attr_size > 12 flat_attr[12] else ''
       self.wbs = True if ('wbs' in flat_elem or 'WBS' in flat_elem) else False
       self.hash = hashlib.sha256(flat_elem.encode('utf-8')).hexdigest()
 
