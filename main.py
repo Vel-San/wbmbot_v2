@@ -265,7 +265,7 @@ while True:
         print(f"[{date()}] Currently no flats available :(")
 
     if not page_changed : 
-        time.sleep(args.interval * 60)
+        time.sleep(int(args.interval) * 60)
     else:
         time.sleep(1.5)
 
