@@ -23,6 +23,7 @@ chrome_options = Options()
 chrome_options.add_argument("--disable-extensions")
 chrome_options.add_argument("--disable-gpu")
 chrome_options.headless = args.headless_off
+chrome_options.add_argument('--log-level=3')
 driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
 driver.implicitly_wait(5)
 
@@ -35,7 +36,9 @@ id = 0
 curr_page_num = 1
 page_changed = False
 TEST = args.test
-if TEST: print("------------------TEST RUN------------------")
+if TEST: 
+    print("------------------TEST RUN------------------")
+    chrome_options.add_argument('--log-level=0')
 
 class Flat:
   def __init__(self, flat_elem):
