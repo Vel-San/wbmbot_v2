@@ -1,78 +1,70 @@
-import datetime
-import hashlib
+import argparse
 import os.path
 import time
-from argparse import ArgumentParser
 
 import yaml
-from selenium import webdriver
-from selenium.webdriver.chrome.options import Options
-from selenium.webdriver.chrome.service import Service
+from chromeDriver import chrome_driver_configurator as cdc
+from handlers import flat
+from helpers import constants
+from logger import wbm_logger
 from selenium.webdriver.common.by import By
-from webdriver_manager.chrome import ChromeDriverManager
-
-parser = ArgumentParser()
-parser.add_argument(
-    "-H",
-    "--headless_off",
-    action="store_false",
-    help="If set, turn off headless run. The bot will run in the opened browser.",
-)
-parser.add_argument(
-    "-t",
-    "--test",
-    action="store_true",
-    help="If set, run test-run on the test data. This does not actually connect to wbm.de.",
-)
-parser.add_argument(
-    "-i",
-    "--interval",
-    default=5,
-    help="Set the time interval in minutes to check for new flats on wbm.de. [default: 5]",
-)
-
-args = parser.parse_args()
 
 
-chrome_options = Options()
-chrome_options.add_argument("--disable-extensions")
-chrome_options.add_argument("--disable-gpu")
-chrome_options.headless = args.headless_off
-chrome_options.add_argument("--log-level=3")
-driver = webdriver.Chrome(
-    service=Service(ChromeDriverManager().install()), options=chrome_options
-)
-driver.implicitly_wait(5)
+def parse_args():
+    """
+    Parse the command line arguments
+    """
+
+    parser = argparse.ArgumentParser(
+        description="A Selenium-based bot that scrapes 'WBM Angebote' page and auto applies on appartments based on user exclusion filters",
+        usage="%(prog)s " "[-i] " "[-H] " "[-t]",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+    )
+
+    parser.add_argument(
+        "-i",
+        "--interval",
+        dest="interval",
+        default=5,
+        required=False,
+        help="Set the time interval in 'minutes' to check for new flats (refresh) on wbm.de. [default: 5 minutes]",
+    )
+    parser.add_argument(
+        "-H",
+        "--headless_off",
+        dest="headless_off",
+        action="store_false",
+        default=True,
+        required=False,
+        help="If set, turn 'OFF' headless run. The bot will run directly in the browser.",
+    )
+    parser.add_argument(
+        "-t",
+        "--test",
+        dest="test",
+        action="store_true",
+        default=False,
+        required=False,
+        help="If set, run test-run on the test data. This does not actually connect to wbm.de.",
+    )
+
+    return parser.parse_args()
 
 
-def date():
-    return datetime.datetime.fromtimestamp(time.time()).strftime("%d.%m.%Y - %H:%M")
+# * Script Starts Here
+if __name__ == "__main__":
+    args = parse_args()
 
+    # Create ChromeDriver
+    wbm_logger.logging.info("Initializing Script")
+    chrome_driver_instance = cdc.ChromeDriverConfigurator(args.headless_off, args.test)
+    driver = chrome_driver_instance.get_driver()
 
 flats = []
 id = 0
 curr_page_num = 1
 page_changed = False
 TEST = args.test
-if TEST:
-    print("------------------TEST RUN------------------")
-    chrome_options.add_argument("--log-level=0")
-
-
-class Flat:
-    def __init__(self, flat_elem):
-        flat_attr = flat_elem.split("\n")
-        attr_size = len(flat_attr)
-        self.title = flat_attr[0] if attr_size > 0 else ""
-        self.district = flat_attr[4] if attr_size > 4 else ""
-        self.street = flat_attr[5] if attr_size > 5 else ""
-        self.zip_code = flat_attr[6].split(" ")[0] if attr_size > 6 else ""
-        self.city = flat_attr[6].split(" ")[1] if attr_size > 6 else ""
-        self.total_rent = flat_attr[8] if attr_size > 8 else ""
-        self.size = flat_attr[10] if attr_size > 10 else ""
-        self.rooms = flat_attr[12] if attr_size > 12 else ""
-        self.wbs = True if ("wbs" in flat_elem or "WBS" in flat_elem) else False
-        self.hash = hashlib.sha256(flat_elem.encode("utf-8")).hexdigest()
 
 
 class User:
@@ -157,7 +149,7 @@ def setup():
     else:
         data["filter"] = ""
 
-    print(f"[{date()}]Done! Writing config file..")
+    wbm_logger.logging.info("Done! Writing config file..")
 
     with open("config.yaml", "w") as outfile:
         yaml.dump(data, outfile, default_flow_style=False)
@@ -170,30 +162,30 @@ def next_page(curr_page_num):
         page_list = driver.find_element(
             By.XPATH, "/html/body/main/div[2]/div[1]/div/nav/ul"
         )
-        print(
-            f"[{date()}] Another page of flats was detected, switching to page {curr_page_num +1}/{len(page_list.find_elements(By.TAG_NAME, 'li'))-2}.."
+        wbm_logger.logging.info(
+            f"Another page of flats was detected, switching to page {curr_page_num +1}/{len(page_list.find_elements(By.TAG_NAME, 'li'))-2}.."
         )
         try:
             page_list.find_elements(By.TAG_NAME, "li")[curr_page_num + 1].click()
             return curr_page_num + 1
         except:
-            print(f"[{date()}] Failed to switch page, returning to main page..")
+            wbm_logger.logging.error("Failed to switch page, returning to main page..")
             return curr_page_num
     else:
-        print(f"[{date()}] Failed to switch page, lastpage reached..")
+        wbm_logger.logging.error(f"Failed to switch page, lastpage reached..")
         return curr_page_num
 
 
 def continue_btn():
-    print(f"[{date()}] Looking for continue button..")
+    wbm_logger.logging.info("Looking for continue button..")
     continue_btn = flat_elem.find_element(By.XPATH, '//*[@title="Details"]')
-    print(f"[{date()}] Flat link found: ", continue_btn.get_attribute("href"))
+    wbm_logger.logging.info(f"Flat link found: ", continue_btn.get_attribute("href"))
     continue_btn.location_once_scrolled_into_view
     driver.get(continue_btn.get_attribute("href"))
 
 
 def fill_form(email):
-    print(f"[{date()}] Filling out form for email adress '{email}' ..")
+    wbm_logger.logging.info(f"Filling out form for email adress '{email}' ..")
     driver.find_element(
         By.XPATH, '//*[@id="c722"]/div/div/form/div[2]/div[1]/div/div/div[1]/label'
     ).click()
@@ -231,21 +223,21 @@ def fill_form(email):
 
 # check if config exists, else start setup
 if os.path.isfile("config.yaml"):
-    print(f"[{date()}] Loading config..")
+    wbm_logger.logging.info("Loading config..")
     with open("config.yaml", "r") as config:
         try:
             user = User(yaml.safe_load(config))
         except yaml.YAMLError as exc:
-            print(f"[{date()}] Error opening config file! ")
+            wbm_logger.logging.error("Error opening config file! ")
 else:
-    print(f"[{date()}] No config file found, starting setup..")
+    wbm_logger.logging.warning(f"No config file found, starting setup..")
     setup()
-    print(f"[{date()}] Loading config..")
+    wbm_logger.logging.info("Loading config..")
     with open("config.yaml", "r") as config:
         try:
             user = User(yaml.safe_load(config))
         except yaml.YAMLError as exc:
-            print(f"[{date()}] Error opening config file! ")
+            wbm_logger.logging.error("Error opening config file! ")
 
 if not os.path.isfile("log.txt"):
     open("log.txt", "a").close()
@@ -259,7 +251,7 @@ start_url = (
 
 while True:
 
-    print(f"[{date()}] Connecting to ", start_url)
+    wbm_logger.logging.info(f"Connecting to ", start_url)
 
     # If we are on same page as last iteration, there probably is only one page or last page was reached and we want to reload the first page
     if not page_changed:
@@ -276,19 +268,19 @@ while True:
         )
         > 0
     ):
-        print(f"[{date()}] Accepting cookies..")
+        wbm_logger.logging.info("Accepting cookies..")
         driver.find_element(
             By.XPATH, '//*[@id="cdk-overlay-0"]/div[2]/div[2]/div[2]/button[2]'
         ).click()
 
     # Find all flat offers displayed on current page
-    print(f"[{date()}] Looking for flats..")
+    wbm_logger.logging.info("Looking for flats..")
     all_flats = driver.find_elements(By.CSS_SELECTOR, ".row.openimmo-search-list-item")
 
     # If there is at least one flat start further checks
     if all_flats:
 
-        print(f"[{date()}] Found {len(all_flats)} flat(s) in total:")
+        wbm_logger.logging.info(f"Found {len(all_flats)} flat(s) in total:")
 
         # For every flat do checks
         for i in range(0, len(all_flats)):
@@ -302,7 +294,7 @@ while True:
             flat_elem = all_flats[i]
 
             # Create flat object
-            flat = Flat(flat_elem.text)
+            flat_obj = flat(flat_elem.text)
 
             # Open log file
             with open("log.txt", "r") as myfile:
@@ -316,19 +308,19 @@ while True:
                     By.CSS_SELECTOR, ".row.openimmo-search-list-item"
                 )
                 flat_elem = all_flats[i]
-                if (str(flat.hash) + str(email).strip()) not in log:
+                if (str(flat_obj.hash) + str(email).strip()) not in log:
 
                     # Check if we omit flat because of filter keyword contained
                     if any(
                         str(keyword).strip() in flat_elem.text.lower()
                         for keyword in user.filter
                     ):
-                        print(
-                            f"[{date()}] Ignoring flat '{flat.title}' because it contains filter keyword(s)."
+                        wbm_logger.logging.warning(
+                            f"Ignoring flat '{flat_obj.title}' because it contains filter keyword(s)."
                         )
                         break
                     else:
-                        print(f"[{date()}] Title: ", flat.title)
+                        wbm_logger.logging.info(f"Title: ", flat_obj.title)
 
                         # Find and click continue button on current flat
                         continue_btn()
@@ -345,19 +337,19 @@ while True:
                         # Write flat info to log file
                         with open("log.txt", "a") as myfile:
                             myfile.write(
-                                f"[{date()}] - ID: {id}\nApplication sent for flat:\n{flat.title}\n{flat.street}\n{flat.city + ' ' + flat.zip_code}\ntotal rent: {flat.total_rent}\nflat size: {flat.size}\nrooms: {flat.rooms}\nwbs: {flat.wbs}\nhash: {flat.hash}{str(email).strip()}\n\n"
+                                f"[{constants.today}] - ID: {id}\nApplication sent for flat:\n{flat_obj.title}\n{flat_obj.street}\n{flat_obj.city + ' ' + flat_obj.zip_code}\ntotal rent: {flat_obj.total_rent}\nflat size: {flat_obj.size}\nrooms: {flat_obj.rooms}\nwbs: {flat_obj.wbs}\nhash: {flat_obj.hash}{str(email).strip()}\n\n"
                             )
 
                         # Increment id (not really used anymore)
                         id += 1
-                        print(f"[{date()}] Done!")
+                        wbm_logger.logging.info("Done!")
 
                         time.sleep(1.5)
                         driver.get(start_url)
                 else:
                     # Flats hash was found in log file
-                    print(
-                        f"[{date()}] Oops, we already applied for flat: {flat.title}, with ID: {id}!"
+                    wbm_logger.logging.warning(
+                        f"Oops, we already applied for flat: {flat_obj.title}, with ID: {id}!"
                     )
                     break
 
@@ -369,13 +361,13 @@ while True:
 
     else:
         # List of flats is empty there is no flat displayed on current page
-        print(f"[{date()}] Currently no flats available :(")
+        wbm_logger.logging.info("Currently no flats available :(")
 
     if not page_changed:
         time.sleep(int(args.interval) * 60)
     else:
         time.sleep(1.5)
 
-    print(f"[{date()}] Reloading main page..")
+    wbm_logger.logging.info("Reloading main page..")
 
 # driver.quit()

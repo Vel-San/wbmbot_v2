@@ -1,0 +1,10 @@
+[main.py:64] [INFO] Initializing Script
+[logger.py:11] [INFO] ====== WebDriver manager ======
+[logger.py:11] [INFO] Get LATEST chromedriver version for google-chrome
+[logger.py:11] [INFO] Get LATEST chromedriver version for google-chrome
+[logger.py:11] [INFO] Driver [/home/vel/.wdm/drivers/chromedriver/linux64/121.0.6167.85/chromedriver-linux64/chromedriver] found in cache
+[2024-02-13 01:38:11,899] [main.py:64] [INFO] Initializing Script
+[2024-02-13 01:38:11,900] [logger.py:11] [INFO] ====== WebDriver manager ======
+[2024-02-13 01:38:11,930] [logger.py:11] [INFO] Get LATEST chromedriver version for google-chrome
+[2024-02-13 01:38:12,045] [logger.py:11] [INFO] Get LATEST chromedriver version for google-chrome
+[2024-02-13 01:38:12,162] [logger.py:11] [INFO] Driver [/home/vel/.wdm/drivers/chromedriver/linux64/121.0.6167.85/chromedriver-linux64/chromedriver] found in cache
