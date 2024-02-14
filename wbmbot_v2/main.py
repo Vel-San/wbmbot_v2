@@ -80,7 +80,7 @@ if __name__ == "__main__":
             current_page,
             previous_page,
             page_changed,
-            args.interval
+            args.interval,
         )
 
 # driver.quit()

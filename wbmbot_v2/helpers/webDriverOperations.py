@@ -180,12 +180,12 @@ def accept_cookies(web_driver):
     - logger: A logging.Logger instance for logging messages.
 
     Returns:
-    - None
+    - bool
     """
 
     try:
         # Define the XPath for the 'Accept Cookies' button
-        accept_button_xpath = '//*[@id="cdk-overlay-0"]/div[2]/div[2]/div[2]/button[2]'
+        accept_button_xpath = "/html/body/div[5]/div/div/div/div/div/button[2]"
 
         # Wait for the cookie dialog to be present and clickable
         WebDriverWait(web_driver, 10).until(
@@ -195,9 +195,35 @@ def accept_cookies(web_driver):
         # Click the 'Accept Cookies' button
         web_driver.find_element(By.XPATH, accept_button_xpath).click()
         wbm_logger.logging.info("Cookies have been accepted.")
+        return True
     except TimeoutException as e:
         # If the cookie dialog does not appear within the timeout, log a message
         wbm_logger.logging.warning("No cookie dialog appeared within the timeout.")
+        return False
+
+
+def close_live_chat_button(web_driver):
+    """
+    Close the 'Live Chat' dialog button
+    """
+
+    try:
+        # Define the XPath for the 'Close Live Chat' button
+        close_button_xpath = '//*[@id="removeConvaiseChat"]'
+
+        # Wait for the Close Live Chat dialog to be present and clickable
+        WebDriverWait(web_driver, 10).until(
+            EC.element_to_be_clickable((By.XPATH, close_button_xpath))
+        )
+
+        # Click the 'Close Live Chat' button
+        web_driver.find_element(By.XPATH, close_button_xpath).click()
+        wbm_logger.logging.info("Live Chat dialog has been closed.")
+        return True
+    except TimeoutException as e:
+        # If the Close Live Chat does not appear within the timeout, log a message
+        wbm_logger.logging.warning("No Live Chat dialog appeared within the timeout.")
+        return False
 
 
 def reset_to_start_page(
@@ -273,6 +299,7 @@ def process_flats(
         )
 
     accept_cookies(web_driver)
+    close_live_chat_button(web_driver)
 
     # Find all flat offers displayed on current page
     wbm_logger.logging.info("Looking for flats..")
