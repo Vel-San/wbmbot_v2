@@ -1,3 +1,14 @@
+- [WBMBOT\_v2](#wbmbot_v2)
+  - [Prerequisites](#prerequisites)
+  - [Installation](#installation)
+  - [Quick Start](#quick-start)
+    - [Configuration File Example](#configuration-file-example)
+  - [Command-Line Interface](#command-line-interface)
+  - [Filtering Strategy](#filtering-strategy)
+  - [Logging](#logging)
+  - [Additional Information](#additional-information)
+  - [TODO](#todo)
+
 # WBMBOT_v2
 
 > An improved work-in-progress (WIP) and fully refactored version of the original [WBMBOT by David Fischer](https://github.com/fischer-hub/wbmbot).
@@ -84,3 +95,15 @@ During setup, you can provide multiple email addresses. The bot will apply to ea
 As of now, there are no timeouts, bot checks, or captchas on the website (which we hope remains the case). However, given the limited number of flats available, frequent checks are not deemed necessary compared to platforms like immoscout24.
 
 *Embark on your apartment hunt with WBMBOT_v2. Good luck!*
+
+## TODO
+
+- [ ] Change "successful_applications.txt" to JSON type
+- [ ] Add support for multi user wbm_config files
+- [ ] Fix test-data
+- [ ] Make a portable docker image of the bot that can be hosted anywhere
+- [ ] Add "excluded_applications.json" that shows all applications that were excluded by the filter
+- [ ] Add color_printer class into the works with the logger
+- [ ] Notify via e-mail whenever the bot applies to an application
+- [ ] Download the viewing of an apartment as a PDF (Available on WBM) for records keeping
+- [ ] Automatically detect if internet network connection is down and pause/restart once back
