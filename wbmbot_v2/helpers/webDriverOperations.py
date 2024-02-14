@@ -306,6 +306,7 @@ def process_flats(
     all_flats = find_flats(web_driver)
     if not all_flats:
         wbm_logger.logging.info("Currently no flats available 😔")
+        time.sleep(int(refresh_internal) * 60)
         return
 
     wbm_logger.logging.info(f"Found {len(all_flats)} flat(s) in total.")

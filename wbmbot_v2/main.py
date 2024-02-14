@@ -22,9 +22,9 @@ def parse_args():
         "-i",
         "--interval",
         dest="interval",
-        default=5,
+        default=3,
         required=False,
-        help="Set the time interval in 'minutes' to check for new flats (refresh) on wbm.de. [default: 5 minutes]",
+        help="Set the time interval in 'minutes' to check for new flats (refresh) on wbm.de. [default: 3 minutes]",
     )
     parser.add_argument(
         "-H",

@@ -73,7 +73,7 @@ Automates the application process for flats on the 'WBM Angebote' page, respecti
 options:
   -h, --help            Show this help message and exit.
   -i INTERVAL, --interval INTERVAL
-                        Set the refresh interval in 'minutes' for checking new flats on wbm.de. [default: 5 minutes]
+                        Set the refresh interval in 'minutes' for checking new flats on wbm.de. [default: 3 minutes]
   -H, --headless_off    Disable headless mode. The bot will run in a visible browser window.
   -t, --test            Perform a test run using test data. Does not connect to wbm.de.
 ```
@@ -90,7 +90,7 @@ Successful applications are recorded in `logging/successful_applications.txt`.
 
 ## Additional Information
 
-During setup, you can provide multiple email addresses. The bot will apply to each flat once per email address. By default, the bot refreshes wbm.de every `5 minutes` to check for new listings.
+During setup, you can provide multiple email addresses. The bot will apply to each flat once per email address. By default, the bot refreshes wbm.de every `3 minutes` to check for new listings.
 
 As of now, there are no timeouts, bot checks, or captchas on the website (which we hope remains the case). However, given the limited number of flats available, frequent checks are not deemed necessary compared to platforms like immoscout24.
 
