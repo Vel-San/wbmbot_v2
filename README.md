@@ -98,13 +98,19 @@ As of now, there are no timeouts, bot checks, or captchas on the website (which 
 
 ## TODO
 
+- [ ] **HIGH PRIORITY** Fix form filling
+- [X] **HIGH PRIORITY** Fix `next page` logic
+- [X] Add the reason if ignoring a flat (To make sure your filters are working properly) in logging
 - [ ] Change "successful_applications.txt" to JSON type
 - [ ] Add support for multi user wbm_config files
 - [ ] Fix test-data
 - [ ] Make a portable docker image of the bot that can be hosted anywhere
 - [ ] Add "excluded_applications.json" that shows all applications that were excluded by the filter
-- [ ] Add color_printer class into the works with the logger
+- [X] Add color_printer class into the works with the logger
 - [ ] Notify via e-mail whenever the bot applies to an application
 - [X] Download the 'Angebote' page as an HTML for records keeping
 - [ ] Download the viewing of an apartment as a PDF (Available on WBM) for records keeping
 - [ ] Automatically detect if internet network connection is down and pause/restart once back
+- [ ] Make a docker container out of the bot
+- [ ] Make an compiled exec of the bot
+- [ ] CI/CD for Github (?)
