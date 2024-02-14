@@ -1,10 +1,13 @@
 import argparse
+import os
 
 from chromeDriver import chrome_driver_configurator as cdc
 from handlers import user
 from helpers import constants, webDriverOperations
 from logger import wbm_logger
 from utility import io_operations
+
+__appname__ = os.path.splitext(os.path.basename(__file__))[0]
 
 
 def parse_args():
@@ -52,8 +55,11 @@ def parse_args():
 if __name__ == "__main__":
     args = parse_args()
 
+    color_me = wbm_logger.ColoredLogger(__appname__)
+    LOG = color_me.create_logger()
+
     # Create ChromeDriver
-    wbm_logger.logging.info("Initializing Script")
+    LOG.info(color_me.cyan("Initializing Script"))
     chrome_driver_instance = cdc.ChromeDriverConfigurator(args.headless_off, args.test)
     web_driver = chrome_driver_instance.get_driver()
 
@@ -71,16 +77,16 @@ if __name__ == "__main__":
     current_page = 1
     previous_page = 1
     page_changed = False
-    wbm_logger.logging.info(f"Connecting to '{start_url}'")
-    while True:
-        webDriverOperations.process_flats(
-            web_driver,
-            user_profile,
-            start_url,
-            current_page,
-            previous_page,
-            page_changed,
-            args.interval,
-        )
+    LOG.info(color_me.cyan(f"Connecting to '{start_url}'"))
+
+    webDriverOperations.process_flats(
+        web_driver,
+        user_profile,
+        start_url,
+        current_page,
+        previous_page,
+        page_changed,
+        args.interval,
+    )
 
 # driver.quit()

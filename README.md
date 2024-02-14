@@ -59,7 +59,7 @@ Alternatively, you can manually create the `configs/wbm_config.json` file with t
     "wbs_date": "23/04/1972",
     "wbs_num": "WBS 160",
     "wbs_rooms": "2",
-    "filter": ["wbm", "3 zimmer"]
+    "filter": ["wbs", "2-zimmer", "2 zimmer", "2 zim", "2-zim"]
 }
 ```
 

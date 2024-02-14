@@ -1,7 +1,12 @@
 import json
+import os
 
 from helpers import constants
 from logger import wbm_logger
+
+__appname__ = os.path.splitext(os.path.basename(__file__))[0]
+color_me = wbm_logger.ColoredLogger(__appname__)
+LOG = color_me.create_logger()
 
 
 def setup_wbm_config():
@@ -80,7 +85,7 @@ def setup_wbm_config():
         data["filter"] = []
 
     # Log the completion of data collection
-    wbm_logger.logging.info("Done! Writing config file..")
+    LOG.info(color_me.green("Done! Writing config file.."))
 
     # Write the collected data to a JSON file
     with open(constants.wbm_config_name, "w") as outfile:

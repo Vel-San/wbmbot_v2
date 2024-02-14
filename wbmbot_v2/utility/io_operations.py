@@ -4,6 +4,10 @@ import os
 from logger import wbm_logger
 from utility import interaction
 
+__appname__ = os.path.splitext(os.path.basename(__file__))[0]
+color_me = wbm_logger.ColoredLogger(__appname__)
+LOG = color_me.create_logger()
+
 
 # Function to check for the existence of the config file and load it
 def load_wbm_config(file_name: str):
@@ -15,28 +19,28 @@ def load_wbm_config(file_name: str):
     """
 
     if os.path.isfile(file_name):
-        wbm_logger.logging.info("Loading WBM config..")
+        LOG.info(color_me.cyan("Loading WBM config.."))
         with open(file_name, "r") as config_file:
             try:
                 user_config = json.load(config_file)
                 return user_config
             except json.JSONDecodeError as e:
-                wbm_logger.logging.error(f"Error parsing WBM config file! ({e})")
+                LOG.error(color_me.red(f"Failed to parse WBM config file! ({e})"))
             except TypeError as e:
-                wbm_logger.logging.error(f"Error parsing WBM config file! ({e})")
+                LOG.error(color_me.red(f"Failed to parse WBM config file! ({e})"))
     else:
-        wbm_logger.logging.warning("No WBM config file found, starting setup..")
+        LOG.warning(color_me.yellow("No WBM config file found, starting setup.."))
         # Setup WBM config from the User
         interaction.setup_wbm_config()
-        wbm_logger.logging.info("Loading WBM config..")
+        LOG.info(color_me.cyan("Loading WBM config.."))
         with open(file_name, "r") as config_file:
             try:
                 user_config = json.load(config_file)
                 return user_config
             except json.JSONDecodeError as e:
-                wbm_logger.logging.error(f"Error parsing WBM config file! ({e})")
+                LOG.error(color_me.red(f"Failed to parse WBM config file! ({e})"))
             except TypeError as e:
-                wbm_logger.logging.error(f"Error parsing WBM config file! ({e})")
+                LOG.error(color_me.red(f"Failed to parse WBM config file! ({e})"))
 
 
 def initialize_application_logger(log_file: str):

@@ -1,13 +1,19 @@
+import os
 import time
 
 from handlers import flat
 from helpers import constants
+from httpsWrapper import httpPageDownloader as hpd
 from logger import wbm_logger
 from selenium.common.exceptions import NoSuchElementException, TimeoutException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 from utility import io_operations
+
+__appname__ = os.path.splitext(os.path.basename(__file__))[0]
+color_me = wbm_logger.ColoredLogger(__appname__)
+LOG = color_me.create_logger()
 
 
 def next_page(web_driver, current_page: int):
@@ -27,29 +33,33 @@ def next_page(web_driver, current_page: int):
     try:
         # Attempt to find the next page button using its XPath
         next_page_button = web_driver.find_element(
-            By.XPATH, "/html/body/main/div[2]/div[1]/div/nav/ul/li[4]/a"
+            By.XPATH, "/html/body/main/div[2]/div/div/div[2]/div/div[2]/nav/ul/li[5]/a"
         )
 
         # If the next page button is found, click it and log the action
         if next_page_button:
             page_list = web_driver.find_element(
-                By.XPATH, "/html/body/main/div[2]/div[1]/div/nav/ul"
+                By.XPATH, "/html/body/main/div[2]/div/div/div[2]/div/div[2]/nav/ul"
             )
             total_pages = (
                 len(page_list.find_elements(By.TAG_NAME, "li")) - 2
             )  # Adjust for non-page list items
-            wbm_logger.logging.info(
-                f"Another page of flats was detected, switching to page {current_page + 1}/{total_pages}.."
+            LOG.info(
+                color_me.cyan(
+                    f"Another page of flats was detected, switching to page {current_page + 1}/{total_pages}.."
+                )
             )
             next_page_button.click()
             return current_page + 1
     except NoSuchElementException as e:
         # Log an error if the next page button is not found
-        wbm_logger.logging.error("Failed to switch page, last page reached..")
+        LOG.error(color_me.red("Failed to switch page, last page reached.."))
     except Exception as e:
         # Log any other exceptions that occur
-        wbm_logger.logging.error(
-            f"Failed to switch page, returning to main page.. Exception: {e}"
+        LOG.error(
+            color_me.red(
+                f"Failed to switch page, returning to main page.. Exception: {e}"
+            )
         )
 
     # Return the current page number if navigation to the next page was not possible
@@ -66,23 +76,24 @@ def continue_btn(web_driver, flat_element):
 
     try:
         # Log the attempt to find the continue button
-        wbm_logger.logging.info("Looking for continue button..")
+        LOG.info(color_me.cyan("Looking for continue button.."))
 
         # Attempt to find the continue button by its XPath
         continue_button = flat_element.find_element(By.XPATH, '//*[@title="Details"]')
 
         # Log the href attribute of the found button
         flat_link = continue_button.get_attribute("href")
-        wbm_logger.logging.info(f"Flat link found: {flat_link}")
+        LOG.info(color_me.green(f"Flat link found: {flat_link}"))
 
         # Scroll the button into view
         continue_button.location_once_scrolled_into_view
 
         # Navigate to the href of the continue button
         web_driver.get(flat_link)
+        return flat_link
     except NoSuchElementException as e:
         # Log an error if the continue button is not found
-        wbm_logger.logging.error("Continue button not found.")
+        LOG.error(color_me.red("Continue button not found."))
 
 
 def fill_form(web_driver, user_obj, email):
@@ -100,7 +111,7 @@ def fill_form(web_driver, user_obj, email):
 
     try:
         # Log the start of the form filling process
-        wbm_logger.logging.info(f"Filling out form for email address '{email}' ..")
+        LOG.info(color_me.cyan(f"Filling out form for email address '{email}' .."))
 
         # Click the radio button or checkbox before filling in text fields
         web_driver.find_element(
@@ -166,8 +177,8 @@ def fill_form(web_driver, user_obj, email):
 
     except NoSuchElementException as e:
         # Log an error if any element is not found
-        wbm_logger.logging.error(
-            f"Element not found during form filling. Exception: {e}"
+        LOG.error(
+            color_me.red(f"Element not found during form filling. Exception: {e}")
         )
 
 
@@ -194,11 +205,11 @@ def accept_cookies(web_driver):
 
         # Click the 'Accept Cookies' button
         web_driver.find_element(By.XPATH, accept_button_xpath).click()
-        wbm_logger.logging.info("Cookies have been accepted.")
+        LOG.info(color_me.green("Cookies have been accepted."))
         return True
     except TimeoutException as e:
         # If the cookie dialog does not appear within the timeout, log a message
-        wbm_logger.logging.warning("No cookie dialog appeared within the timeout.")
+        LOG.warning(color_me.yellow("No cookie dialog appeared within the timeout."))
         return False
 
 
@@ -218,11 +229,11 @@ def close_live_chat_button(web_driver):
 
         # Click the 'Close Live Chat' button
         web_driver.find_element(By.XPATH, close_button_xpath).click()
-        wbm_logger.logging.info("Live Chat dialog has been closed.")
+        LOG.info(color_me.green("Live Chat dialog has been closed."))
         return True
     except TimeoutException as e:
         # If the Close Live Chat does not appear within the timeout, log a message
-        wbm_logger.logging.warning("No Live Chat dialog appeared within the timeout.")
+        LOG.warning(color_me.yellow("No Live Chat dialog appeared within the timeout."))
         return False
 
 
@@ -262,10 +273,16 @@ def check_flat_already_applied(flat_obj, email, log):
 
 
 def contains_filter_keywords(flat_elem, user_filters):
-    """Check if the flat contains any of the filter keywords."""
-    return any(
-        str(keyword).strip() in flat_elem.text.lower() for keyword in user_filters
-    )
+    """Check if the flat contains any of the filter keywords and return the keywords."""
+    # Find all keywords that are in the flat_elem's text
+    keywords_found = [
+        keyword
+        for keyword in user_filters
+        if str(keyword).strip().lower() in flat_elem.text.lower()
+    ]
+
+    # Return a tuple of boolean and keywords found
+    return (bool(keywords_found), keywords_found)
 
 
 def apply_to_flat(web_driver, flat_element, user_profile, email):
@@ -293,60 +310,69 @@ def process_flats(
 ):
     """Process each flat by checking criteria and applying if applicable."""
 
-    if not page_changed:
-        current_page, previous_page = reset_to_start_page(
-            web_driver, start_url, current_page, previous_page
+    while True:
+        if not page_changed:
+            current_page, previous_page = reset_to_start_page(
+                web_driver, start_url, current_page, previous_page
+            )
+
+        accept_cookies(web_driver)
+        close_live_chat_button(web_driver)
+
+        # Find all flat offers displayed on current page
+        LOG.info(color_me.cyan("Looking for flats.."))
+        all_flats = find_flats(web_driver)
+        if not all_flats:
+            LOG.info(color_me.cyan("Currently no flats available 😔"))
+            time.sleep(int(refresh_internal) * 60)
+            return
+
+        LOG.info(color_me.green(f"Found {len(all_flats)} flat(s) in total."))
+        # Save locally
+        hpd.save_viewing_offline(
+            start_url, constants.offline_angebote_path, f"{constants.now}"
         )
+        log_content = io_operations.read_log_file(constants.log_file_path)
 
-    accept_cookies(web_driver)
-    close_live_chat_button(web_driver)
+        for i, flat_elem in enumerate(all_flats):
+            time.sleep(1.5)  # Sleep to mimic human behavior and avoid detection
 
-    # Find all flat offers displayed on current page
-    wbm_logger.logging.info("Looking for flats..")
-    all_flats = find_flats(web_driver)
-    if not all_flats:
-        wbm_logger.logging.info("Currently no flats available 😔")
-        time.sleep(int(refresh_internal) * 60)
-        return
+            flat_obj = flat.Flat(flat_elem.text)  # Create flat object
 
-    wbm_logger.logging.info(f"Found {len(all_flats)} flat(s) in total.")
-    log_content = io_operations.read_log_file(constants.log_file_path)
-
-    for i, flat_elem in enumerate(all_flats):
-        time.sleep(1.5)  # Sleep to mimic human behavior and avoid detection
-
-        flat_obj = flat.Flat(flat_elem.text)  # Create flat object
-
-        for email in user_profile.emails:
-            if not check_flat_already_applied(flat_obj, email, log_content):
-                if contains_filter_keywords(flat_elem, user_profile.filter):
-                    wbm_logger.logging.warning(
-                        f"Ignoring flat '{flat_obj.title}' because it contains filter keyword(s)."
+            for email in user_profile.emails:
+                if not check_flat_already_applied(flat_obj, email, log_content):
+                    if contains_filter_keywords(flat_elem, user_profile.filter)[0]:
+                        LOG.warning(
+                            color_me.yellow(
+                                f"Ignoring flat '{flat_obj.title}' because it contains filter keyword(s) --> {contains_filter_keywords(flat_elem, user_profile.filter)[1]}"
+                            )
+                        )
+                        break
+                    else:
+                        LOG.info(color_me.cyan(f"Applying to flat: {flat_obj.title}"))
+                        apply_to_flat(web_driver, flat_elem, user_profile, email)
+                        log_entry = f"[{constants.today}] - Application sent for flat: {flat_obj.title}\n"
+                        io_operations.write_log_file(constants.log_file_path, log_entry)
+                        LOG.info(color_me.green("Done!"))
+                        time.sleep(1.5)
+                        web_driver.get(start_url)
+                else:
+                    LOG.warning(
+                        color_me.yellow(
+                            f"Oops, we already applied for flat: {flat_obj.title}!"
+                        )
                     )
                     break
-                else:
-                    wbm_logger.logging.info(f"Applying to flat: {flat_obj.title}")
-                    apply_to_flat(web_driver, flat_elem, user_profile, email)
-                    log_entry = f"[{constants.today}] - Application sent for flat: {flat_obj.title}\n"
-                    io_operations.write_log_file(constants.log_file_path, log_entry)
-                    wbm_logger.logging.info("Done!")
-                    time.sleep(1.5)
-                    web_driver.get(start_url)
-            else:
-                wbm_logger.logging.warning(
-                    f"Oops, we already applied for flat: {flat_obj.title}!"
-                )
-                break
 
-        # Try to switch to next page if exists, in the last iteration
-        if i == len(all_flats) - 1:
-            previous_page = current_page
-            current_page = next_page(current_page)
-            page_changed = current_page != previous_page
+            # Try to switch to next page if exists, in the last iteration
+            if i == len(all_flats) - 1:
+                previous_page = current_page
+                current_page = next_page(web_driver, current_page)
+                page_changed = current_page != previous_page
 
-    if not page_changed:
-        time.sleep(int(refresh_internal) * 60)
-    else:
-        time.sleep(1.5)
+        if not page_changed:
+            time.sleep(int(refresh_internal) * 60)
+        else:
+            time.sleep(1.5)
 
-    wbm_logger.logging.info("Reloading main page..")
+        LOG.info(color_me.cyan("Reloading main page.."))
