@@ -25,6 +25,7 @@ class ChromeDriverConfigurator:
         """
         self.chrome_options.add_argument("--disable-extensions")
         self.chrome_options.add_argument("--disable-gpu")
+        self.chrome_options.add_argument("--disable-logging")
         self.chrome_options.add_argument("--log-level=3")
         self.chrome_options.headless = self.headless_off
         if self.test:

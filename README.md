@@ -1,60 +1,86 @@
-# WBMBOT
-A simple selenium based python bot to check the website of WBM Wohnungsbaugesellschaft Berlin-Mitte mbH for new flats and automatically apply for them, since only the first 1000 applicants will be considered in the random selection process for apartment viewing.
+# WBMBOT_v2
 
-# Getting started
-To install all dependencies you can use the [`conda`](https://docs.conda.io/en/latest/) package manager and create an environment from the `environment.yaml` file located in the project directory as follows:
-```
-# create conda environment form environment file
-conda env create -f environment.yaml
+> An improved work-in-progress (WIP) and fully refactored version of the original [WBMBOT by David Fischer](https://github.com/fischer-hub/wbmbot).
 
-# activate conda environment
-conda activate wbmbot
-```
-If you don't have `conda` installed I recommend installing it or installing all dependencies manually (good luck with that). Alternatively you can install the dependencies using `pip`, since all of them should be available on there too.
+WBMBOT_v2 is a Selenium-based Python bot designed to automate the application process for new flats listed by WBM Wohnungsbaugesellschaft Berlin-Mitte GmbH. It prioritizes speed and efficiency to ensure your application is among the first 1000 considered in the random selection process for apartment viewings.
 
+## Prerequisites
 
-To start the bot simply run the below command in your terminal in the project directory:
-```
-python3 main.py
+- Python 3.10 or higher
+
+## Installation
+
+To set up your environment and install the required dependencies, run the following command:
+
+```bash
+pip install -r requirements.txt
 ```
 
-If you are running the bot for the first time the bot will start the setup process asking all the necessary information for applications on wbm.de.
-Note that these informations will be saved unencrypted to a local `config.yaml` file in *human readable* format!!
-If you don't want to use the setup process for this, you can just create a `config.yaml` file yourself in the project directory of format:
+## Quick Start
 
-```
-city: "cityname"
-email: "email@adress1,email@adress2,..."
-first_name: "Max"
-filter: "keyword1,keyword2,..."
-last_name: "Mustermann"
-phone: "0123456789"
-street: "Streetname 42"
-wbs: "yes"
-wbs_date: "23/04/1972"
-wbs_num: "WBS 160"
-wbs_rooms: '2'
-zip_code: '12345'
+To launch the bot, navigate to the project directory and execute:
+
+```bash
+python3 wbmbot_v2/main.py
 ```
 
-# Parameters
-```
-usage: main.py [-h] [-H] [-t] [-i INTERVAL]
+On the first run, the bot will guide you through a setup process to gather necessary information for applications on wbm.de. This data will be stored in a local `configs/wbm_config.json` file in a human-readable format.
 
-optional arguments:
+**Security Notice**: The information is saved unencrypted. Ensure the security of your `configs/wbm_config.json` file.
+
+Alternatively, you can manually create the `configs/wbm_config.json` file with the following structure:
+
+### Configuration File Example
+
+```json
+{
+    "first_name": "JOHN",
+    "last_name": "DOE",
+    "emails": [
+        "XXX@protonmail.com",
+        "YYY@protonmail.com"
+    ],
+    "street": "Doner-Str. 123",
+    "zip_code": "12345",
+    "city": "Berlin",
+    "phone": "4911223344",
+    "wbs": "yes",
+    "wbs_date": "23/04/1972",
+    "wbs_num": "WBS 160",
+    "wbs_rooms": "2",
+    "filter": ["wbm", "3 zimmer"]
+}
+```
+
+## Command-Line Interface
+
+```bash
+usage: main.py [-i INTERVAL] [-H] [-t]
+
+Automates the application process for flats on the 'WBM Angebote' page, respecting user-defined exclusion filters.
+
+options:
   -h, --help            Show this help message and exit.
-  -H, --headless_off    If set, turn off headless run. The bot will run in the opened browser.
-  -t, --test            If set, run test-run on the test data. This does not actually connect to wbm.de.
-  -i, --interval        Set the time interval in minutes to check for new flats on wbm.de. [default: 5]
+  -i INTERVAL, --interval INTERVAL
+                        Set the refresh interval in 'minutes' for checking new flats on wbm.de. [default: 5 minutes]
+  -H, --headless_off    Disable headless mode. The bot will run in a visible browser window.
+  -t, --test            Perform a test run using test data. Does not connect to wbm.de.
 ```
 
-# Filtering
-Currently the bot will apply to all available flats on the WBM website, which most of the time is only like one per every 3 days anyway..
-However a filtering feature is planned and will (probably) be implemented soon.
+## Filtering Strategy
 
-# Additional
-The bot will save all successfull applications to a `log.txt` file. This file is also used to apply to every flat only once, so don't delete it unless you want to reapply to all available flats!
-During the setupt process you will be able to submit multiple email adresses. The bot will then apply for every flat with your user data once per email adress.
-Per default wbm.de will be reloaded and checked for new flats every 5 minutes. There currently is no timeout or bot check / captcha on the website (lets hope it stays like this), but I dont think its necessary to check more often, as there are not many flats available anyway (in contrast to e.g. immoscout24).
+The filter list is designed to exclude listings based on specified keywords. Simply add your exclusion keywords to the list.
 
-Let the hunt begin! Good luck!
+## Logging
+
+Successful applications are recorded in `logging/successful_applications.txt`.
+
+**Important**: This log prevents reapplication to the same flats. Do not delete it unless you intend to reapply to all available flats.
+
+## Additional Information
+
+During setup, you can provide multiple email addresses. The bot will apply to each flat once per email address. By default, the bot refreshes wbm.de every `5 minutes` to check for new listings.
+
+As of now, there are no timeouts, bot checks, or captchas on the website (which we hope remains the case). However, given the limited number of flats available, frequent checks are not deemed necessary compared to platforms like immoscout24.
+
+*Embark on your apartment hunt with WBMBOT_v2. Good luck!*
