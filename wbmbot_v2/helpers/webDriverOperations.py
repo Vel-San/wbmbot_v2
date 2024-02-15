@@ -5,9 +5,11 @@ from handlers import flat
 from helpers import constants, notifications
 from httpsWrapper import httpPageDownloader as hpd
 from logger import wbm_logger
-from selenium.common.exceptions import (NoSuchElementException,
-                                        StaleElementReferenceException,
-                                        TimeoutException)
+from selenium.common.exceptions import (
+    NoSuchElementException,
+    StaleElementReferenceException,
+    TimeoutException,
+)
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
@@ -273,11 +275,9 @@ def close_live_chat_button(web_driver):
 
         # Click the 'Close Live Chat' button
         web_driver.find_element(By.XPATH, close_button_xpath).click()
-        LOG.info(color_me.green("Live Chat dialog has been closed."))
         return True
     except TimeoutException as e:
         # If the Close Live Chat does not appear within the timeout, log a message
-        LOG.warning(color_me.yellow("No Live Chat dialog appeared within the timeout."))
         return False
 
 

@@ -122,11 +122,15 @@ options:
 
 ### Build
 
->docker build -f ci/docker/Dockerfile -t wbmbot_v2 .
+```bash
+docker build -f ci/docker/Dockerfile -t wbmbot_v2 .
+```
 
 ### Pull
 
->docker pull vel7an/wbmbot_v2:latest
+```bash
+docker pull vel7an/wbmbot_v2:latest
+```
 
 ### Run
 
@@ -171,7 +175,7 @@ As of now, there are no timeouts, bot checks, or captchas on the website (which 
 - [ ] Make a portable docker image of the bot that can be hosted anywhere
 - [ ] Add "excluded_applications.json" that shows all applications that were excluded by the filter
 - [X] Add color_printer class into the works with the logger
-- [ ] Notify via e-mail whenever the bot applies to an application
+- [X] Notify via e-mail whenever the bot applies to an application
 - [X] Download the 'Angebote' page as an HTML for records keeping
 - [X] Download the viewing of an apartment as a PDF (Available on WBM) for records keeping
 - [ ] Automatically detect if internet network connection is down and pause/restart once back
