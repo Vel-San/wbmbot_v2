@@ -58,8 +58,6 @@ def download_pdf_file(url: str, local_dir: str) -> None:
         file_name = url.split("/")[-1]
         file_path = os.path.join(local_dir, file_name)
 
-        print(file_name)
-
         with open(file_path, "wb") as pdf_file:
             for chunk in response.iter_content(chunk_size=1024):
                 if chunk:

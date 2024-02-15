@@ -51,19 +51,19 @@ def next_page(web_driver, current_page: int):
             )  # Adjust for non-page list items
             LOG.info(
                 color_me.cyan(
-                    f"Another page of flats was detected, switching to page {current_page + 1}/{total_pages}.."
+                    f"Another page of flats was detected, switching to page {current_page + 1}/{total_pages}"
                 )
             )
             next_page_button.click()
             return current_page + 1
     except NoSuchElementException as e:
         # Log an error if the next page button is not found
-        LOG.error(color_me.red("Failed to switch page, last page reached.."))
+        LOG.error(color_me.red("Failed to switch page, last page reached"))
     except Exception as e:
         # Log any other exceptions that occur
         LOG.error(
             color_me.red(
-                f"Failed to switch page, returning to main page.. Exception: {e}"
+                f"Failed to switch page, returning to main page | Exception: {e}"
             )
         )
 
@@ -102,7 +102,7 @@ def continue_btn(web_driver, flat_element):
 
     try:
         # Log the attempt to find the continue button
-        LOG.info(color_me.cyan("Looking for continue button.."))
+        LOG.info(color_me.cyan("Looking for continue button"))
 
         # Attempt to find the continue button by its XPath
         continue_button = flat_element.find_element(By.XPATH, "//a[@title='Details']")
@@ -140,7 +140,7 @@ def fill_form(web_driver, user_obj, email):
 
     try:
         # Log the start of the form filling process
-        LOG.info(color_me.cyan(f"Filling out form for email address '{email}' .."))
+        LOG.info(color_me.cyan(f"Filling out form for email address '{email}'"))
 
         # If the user has WBS
         if user_obj.wbs:
@@ -311,11 +311,13 @@ def reset_to_start_page(
 
 def find_flats(web_driver):
     """Find and return a list of flats from the webpage."""
+
     return web_driver.find_elements(By.CSS_SELECTOR, ".row.openimmo-search-list-item")
 
 
 def check_flat_already_applied(flat_obj, email, log):
     """Check if an application for the flat has already been sent."""
+
     return (
         f"[{email.strip()}] - Application sent for flat: {flat_obj.title} | {flat_obj.hash}"
         in log
@@ -324,6 +326,7 @@ def check_flat_already_applied(flat_obj, email, log):
 
 def contains_filter_keywords(flat_elem, user_filters):
     """Check if the flat contains any of the filter keywords and return the keywords."""
+
     # Find all keywords that are in the flat_elem's text
     keywords_found = [
         keyword
@@ -335,13 +338,17 @@ def contains_filter_keywords(flat_elem, user_filters):
     return (bool(keywords_found), keywords_found)
 
 
-def apply_to_flat(web_driver, flat_element, user_profile, email):
+def apply_to_flat(web_driver, flat_element, flat_title, user_profile, email):
     """Apply to the flat using the provided email."""
-    # Find and click continue button on current flat
+
+    # Find and click "Ansehen" button on current flat
     continue_btn(web_driver, flat_element)
 
     # Fill out application form on current flat using info stored in user object
     fill_form(web_driver, user_profile, email)
+
+    # Download as PDF
+    download_expose_as_pdf(web_driver, flat_title)
 
     # Submit form
     web_driver.find_element(By.XPATH, "//button[@type='submit']").click()
@@ -368,7 +375,7 @@ def process_flats(
         close_live_chat_button(web_driver)
 
         # Find all flat offers displayed on current page
-        LOG.info(color_me.cyan("Looking for flats.."))
+        LOG.info(color_me.cyan("Looking for flats"))
         all_flats = find_flats(web_driver)
         if not all_flats:
             LOG.info(color_me.cyan("Currently no flats available 😔"))
@@ -412,8 +419,9 @@ def process_flats(
                                 f"Applying to flat: {flat_obj.title} for {email}"
                             )
                         )
-                        apply_to_flat(web_driver, flat_elem, user_profile, email)
-                        download_expose_as_pdf(web_driver, flat_obj.title)
+                        apply_to_flat(
+                            web_driver, flat_elem, flat_obj.title, user_profile, email
+                        )
                         log_entry = f"[{constants.today}] - [{email}] - Application sent for flat: {flat_obj.title} | {flat_obj.hash}\n"
                         io_operations.write_log_file(constants.log_file_path, log_entry)
                         LOG.info(color_me.green("Done!"))
@@ -438,4 +446,4 @@ def process_flats(
         else:
             time.sleep(1.5)
 
-        LOG.info(color_me.cyan("Reloading main page.."))
+        LOG.info(color_me.cyan("Reloading main page"))

@@ -19,7 +19,7 @@ def load_wbm_config(file_name: str):
     """
 
     if os.path.isfile(file_name):
-        LOG.info(color_me.cyan("Loading WBM config.."))
+        LOG.info(color_me.cyan("Loading WBM config"))
         with open(file_name, "r") as config_file:
             try:
                 user_config = json.load(config_file)
@@ -29,10 +29,10 @@ def load_wbm_config(file_name: str):
             except TypeError as e:
                 LOG.error(color_me.red(f"Failed to parse WBM config file! ({e})"))
     else:
-        LOG.warning(color_me.yellow("No WBM config file found, starting setup.."))
+        LOG.warning(color_me.yellow("No WBM config file found, starting setup"))
         # Setup WBM config from the User
         interaction.setup_wbm_config()
-        LOG.info(color_me.cyan("Loading WBM config.."))
+        LOG.info(color_me.cyan("Loading WBM config"))
         with open(file_name, "r") as config_file:
             try:
                 user_config = json.load(config_file)
