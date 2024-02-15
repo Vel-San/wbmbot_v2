@@ -2,7 +2,6 @@ import logging
 import os
 import warnings
 
-import requests
 from pywebcopy import save_webpage
 from utility import io_operations
 
@@ -63,5 +62,6 @@ def download_pdf_file(url: str, local_dir: str) -> None:
                 if chunk:
                     pdf_file.write(chunk)
 
+        return file_path
     except requests.exceptions.RequestException as e:
         None

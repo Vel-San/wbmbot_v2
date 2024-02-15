@@ -2,7 +2,7 @@ import os
 import time
 
 from handlers import flat
-from helpers import constants
+from helpers import constants, notifications
 from httpsWrapper import httpPageDownloader as hpd
 from logger import wbm_logger
 from selenium.common.exceptions import (NoSuchElementException,
@@ -85,9 +85,10 @@ def download_expose_as_pdf(web_driver, flat_name: str):
     # Log the href attribute of the found button
     download_link = download_button.get_attribute("href")
 
-    hpd.download_pdf_file(
+    pdf_path = hpd.download_pdf_file(
         download_link, f"{constants.offline_apartment_path}{constants.now}"
     )
+    return pdf_path
 
 
 def continue_btn(web_driver, flat_element):
@@ -338,16 +339,24 @@ def apply_to_flat(web_driver, flat_element, flat_title, user_profile, email):
     """Apply to the flat using the provided email."""
 
     # Find and click "Ansehen" button on current flat
-    continue_btn(web_driver, flat_element)
+    flat_link = continue_btn(web_driver, flat_element)
 
     # Fill out application form on current flat using info stored in user object
     fill_form(web_driver, user_profile, email)
 
     # Download as PDF
-    download_expose_as_pdf(web_driver, flat_title)
+    pdf_path = download_expose_as_pdf(web_driver, flat_title)
 
     # Submit form
     web_driver.find_element(By.XPATH, "//button[@type='submit']").click()
+
+    # Send e-mail
+    notifications.send_email_notification(
+        email,
+        f"[Applied] {flat_title}",
+        f"Appartment Link: {flat_link}\n\nYour Profile: {user_profile}",
+        pdf_path,
+    )
 
 
 def process_flats(
@@ -412,7 +421,7 @@ def process_flats(
                     else:
                         LOG.info(
                             color_me.cyan(
-                                f"Applying to flat: {flat_obj.title} for {email}"
+                                f"Applying to flat: {flat_obj.title} for '{email}'"
                             )
                         )
                         apply_to_flat(

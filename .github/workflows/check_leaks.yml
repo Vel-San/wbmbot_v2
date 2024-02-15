@@ -1,0 +1,17 @@
+name: Secret Detection
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  scan-secrets:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Run TruffleHog OSS
+        uses: trufflesecurity/trufflehog@v3.67.6

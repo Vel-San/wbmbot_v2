@@ -10,6 +10,7 @@
   - [Installation](#installation)
   - [Quick Start](#quick-start)
     - [Configuration File Example](#configuration-file-example)
+  - [Notifications (E-mails)](#notifications-e-mails)
   - [Outputs](#outputs)
   - [Command-Line Interface](#command-line-interface)
   - [Docker](#docker)
@@ -78,6 +79,18 @@ Alternatively, you can manually create the `configs/wbm_config.json` file with t
 }
 ```
 
+## Notifications (E-mails)
+
+The bot will be able to send you e-mail notifications (from YOURSELF) once it applies for a flat.
+
+To do so, you need to export `EMAIL_PASSWORD` to your environment variables. If this variable is not found, no e-mails will be sent.
+
+**NOTE**: If your email has 2FA (MFA), you need to create an `App Password` from your Outlook online settings.
+
+**NOTE**: Only `@outlook.com` emails are currently supported
+
+> export EMAIL_PASSWORD=(password)
+
 ## Outputs
 
 You will get outputs such as:
@@ -117,6 +130,9 @@ options:
 ### Run
 
 If running for the first time, use `-it` to setup your config, if you already have the config ready in the correct directory, use `-d`
+
+If you want to send emails as well to yourself as notifications, please add `-e "EMAIL_PASSWORD=<password>"` to the command
+
 ```bash
 docker run -it \
     -v /PATH_HERE/offline_viewings:/home/offline_viewings \

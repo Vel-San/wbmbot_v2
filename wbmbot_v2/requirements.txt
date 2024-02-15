@@ -2,3 +2,4 @@ colorama==0.4.6
 pywebcopy==7.0.2
 selenium==4.17.2
 webdriver_manager==4.0.1
+yagmail==0.15.293

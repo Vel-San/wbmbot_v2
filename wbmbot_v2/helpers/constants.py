@@ -7,6 +7,9 @@ today = dt.date.today()
 now = dt.datetime.now()
 now = now.strftime("%Y-%m-%d_%H-%M")
 
+# Retrieve email and password from environment variables
+email_password = os.environ.get("EMAIL_PASSWORD")
+
 # WBM Config File Name
 wbm_config_name = f"{os.getcwd()}/configs/wbm_config.json"
 
