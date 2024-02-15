@@ -5,7 +5,11 @@ from handlers import flat
 from helpers import constants
 from httpsWrapper import httpPageDownloader as hpd
 from logger import wbm_logger
-from selenium.common.exceptions import NoSuchElementException, TimeoutException
+from selenium.common.exceptions import (
+    NoSuchElementException,
+    StaleElementReferenceException,
+    TimeoutException,
+)
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
@@ -33,14 +37,15 @@ def next_page(web_driver, current_page: int):
     try:
         # Attempt to find the next page button using its XPath
         next_page_button = web_driver.find_element(
-            By.XPATH, "/html/body/main/div[2]/div/div/div[2]/div/div[2]/nav/ul/li[5]/a"
+            By.XPATH, "//a[@title='Nächste Immobilien Seite']"
         )
 
         # If the next page button is found, click it and log the action
         if next_page_button:
             page_list = web_driver.find_element(
-                By.XPATH, "/html/body/main/div[2]/div/div/div[2]/div/div[2]/nav/ul"
+                By.XPATH, "//ul[@class='pagination pagination-sm']"
             )
+            # -2 to exclude the < and > arrows of next and previous pages
             total_pages = (
                 len(page_list.find_elements(By.TAG_NAME, "li")) - 2
             )  # Adjust for non-page list items
@@ -66,6 +71,27 @@ def next_page(web_driver, current_page: int):
     return current_page
 
 
+def download_expose_as_pdf(web_driver, flat_name: str):
+    """
+    Gets the EXPOSE link and saves it as a PDF in your localy directory
+    """
+
+    # Log the attempt to find the continue button
+    LOG.info(color_me.cyan(f"Attempting to download expose for '{flat_name}'"))
+
+    # Attempt to find the continue button by its XPath
+    download_button = web_driver.find_element(
+        By.XPATH, "//a[@class='openimmo-detail__intro-expose-button btn download']"
+    )
+
+    # Log the href attribute of the found button
+    download_link = download_button.get_attribute("href")
+
+    hpd.download_pdf_file(
+        download_link, f"{constants.offline_apartment_path}{constants.now}"
+    )
+
+
 def continue_btn(web_driver, flat_element):
     """
     Finds and clicks the 'continue' button to navigate to the details page of a flat.
@@ -79,7 +105,7 @@ def continue_btn(web_driver, flat_element):
         LOG.info(color_me.cyan("Looking for continue button.."))
 
         # Attempt to find the continue button by its XPath
-        continue_button = flat_element.find_element(By.XPATH, '//*[@title="Details"]')
+        continue_button = flat_element.find_element(By.XPATH, "//a[@title='Details']")
 
         # Log the href attribute of the found button
         flat_link = continue_button.get_attribute("href")
@@ -94,6 +120,9 @@ def continue_btn(web_driver, flat_element):
     except NoSuchElementException as e:
         # Log an error if the continue button is not found
         LOG.error(color_me.red("Continue button not found."))
+    except StaleElementReferenceException as e:
+        # Log an error if the continue button is stale
+        LOG.error(color_me.red("Stale 'Continue' button."))
 
 
 def fill_form(web_driver, user_obj, email):
@@ -113,66 +142,84 @@ def fill_form(web_driver, user_obj, email):
         # Log the start of the form filling process
         LOG.info(color_me.cyan(f"Filling out form for email address '{email}' .."))
 
-        # Click the radio button or checkbox before filling in text fields
-        web_driver.find_element(
-            By.XPATH, '//*[@id="c722"]/div/div/form/div[2]/div[1]/div/div/div[1]/label'
-        ).click()
+        # If the user has WBS
+        if user_obj.wbs:
+            # Click the radio button or checkbox before filling in text fields
+            web_driver.find_element(
+                By.XPATH, "//label[@for='powermail_field_wbsvorhanden_1']"
+            ).click()
 
-        # Fill in the user's WBS date
-        web_driver.find_element(
-            By.XPATH, '//*[@id="powermail_field_wbsgueltigbis"]'
-        ).send_keys(user_obj.wbs_date)
+            # Fill in the user's WBS date
+            web_driver.find_element(
+                By.XPATH, "//input[@id='powermail_field_wbsgueltigbis']"
+            ).send_keys(user_obj.wbs_date)
 
-        # Fill in the user's WBS rooms
-        web_driver.find_element(
-            By.XPATH, '//*[@id="powermail_field_wbszimmeranzahl"]'
-        ).send_keys(user_obj.wbs_rooms)
+            # Fill in the user's WBS rooms
+            web_driver.find_element(
+                By.XPATH, "//select[@id='powermail_field_wbszimmeranzahl']"
+            ).send_keys(user_obj.wbs_rooms)
 
-        # Fill in the user's WBS number
+            # Fill in the user's WBS number
+            web_driver.find_element(
+                By.XPATH,
+                "//select[@id='powermail_field_einkommensgrenzenacheinkommensbescheinigung9']",
+            ).send_keys(user_obj.wbs_num)
+
+            # Click on Special Housing Needs if required
+            if user_obj.wbs_special_housing_needs:
+                web_driver.find_element(
+                    By.XPATH,
+                    "//label[@for='powermail_field_wbsmitbesonderemwohnbedarf_1']",
+                ).click()
+        else:
+            web_driver.find_element(
+                By.XPATH, "//label[@for='powermail_field_wbsvorhanden_2']"
+            ).click()
+
+        # Select the user's sex/gender
         web_driver.find_element(
             By.XPATH,
-            '//*[@id="powermail_field_einkommensgrenzenacheinkommensbescheinigung9"]',
-        ).send_keys(user_obj.wbs_num)
+            "//select[@id='powermail_field_anrede']",
+        ).send_keys(user_obj.sex)
 
         # Fill in the user's last name
-        web_driver.find_element(By.XPATH, '//*[@id="powermail_field_name"]').send_keys(
-            user_obj.last_name
-        )
+        web_driver.find_element(
+            By.XPATH, "//input[@id='powermail_field_name']"
+        ).send_keys(user_obj.last_name)
 
         # Fill in the user's first name
         web_driver.find_element(
-            By.XPATH, '//*[@id="powermail_field_vorname"]'
+            By.XPATH, "//input[@id='powermail_field_vorname']"
         ).send_keys(user_obj.first_name)
 
         # Fill in the user's street address
         web_driver.find_element(
-            By.XPATH, '//*[@id="powermail_field_strasse"]'
+            By.XPATH, "//input[@id='powermail_field_strasse']"
         ).send_keys(user_obj.street)
 
         # Fill in the user's postal code
-        web_driver.find_element(By.XPATH, '//*[@id="powermail_field_plz"]').send_keys(
-            user_obj.zip_code
-        )
+        web_driver.find_element(
+            By.XPATH, "//input[@id='powermail_field_plz']"
+        ).send_keys(user_obj.zip_code)
 
         # Fill in the user's city
-        web_driver.find_element(By.XPATH, '//*[@id="powermail_field_ort"]').send_keys(
-            user_obj.city
-        )
+        web_driver.find_element(
+            By.XPATH, "//input[@id='powermail_field_ort']"
+        ).send_keys(user_obj.city)
 
         # Fill in the email address
         web_driver.find_element(
-            By.XPATH, '//*[@id="powermail_field_e_mail"]'
+            By.XPATH, "//input[@id='powermail_field_e_mail']"
         ).send_keys(email)
 
         # Fill in the user's phone number
         web_driver.find_element(
-            By.XPATH, '//*[@id="powermail_field_telefon"]'
+            By.XPATH, "//input[@id='powermail_field_telefon']"
         ).send_keys(user_obj.phone)
 
-        # Click the submit button or another radio button/checkbox if necessary
-        # This part of the code is assumed based on the initial pattern and should be adjusted if the actual form differs
+        # Click on Datenschutz
         web_driver.find_element(
-            By.XPATH, '//*[@id="c722"]/div/div/form/div[2]/div[14]/div/div/div[1]/label'
+            By.XPATH, "//label[@for='powermail_field_datenschutzhinweis_1']"
         ).click()
 
     except NoSuchElementException as e:
@@ -196,7 +243,7 @@ def accept_cookies(web_driver):
 
     try:
         # Define the XPath for the 'Accept Cookies' button
-        accept_button_xpath = "/html/body/div[5]/div/div/div/div/div/button[2]"
+        accept_button_xpath = "//button[@class='cm-btn cm-btn-success']"
 
         # Wait for the cookie dialog to be present and clickable
         WebDriverWait(web_driver, 10).until(
@@ -269,7 +316,10 @@ def find_flats(web_driver):
 
 def check_flat_already_applied(flat_obj, email, log):
     """Check if an application for the flat has already been sent."""
-    return (str(flat_obj.hash) + str(email).strip()) in log
+    return (
+        f"[{email.strip()}] - Application sent for flat: {flat_obj.title} | {flat_obj.hash}"
+        in log
+    )
 
 
 def contains_filter_keywords(flat_elem, user_filters):
@@ -290,13 +340,11 @@ def apply_to_flat(web_driver, flat_element, user_profile, email):
     # Find and click continue button on current flat
     continue_btn(web_driver, flat_element)
 
-    # Fill out application form on current flat using info stored in user object
-    fill_form(web_driver, user_profile, email)
+    # # Fill out application form on current flat using info stored in user object
+    # fill_form(web_driver, user_profile, email)
 
-    # Submit form
-    web_driver.find_element(
-        By.XPATH, '//*[@id="c722"]/div/div/form/div[2]/div[15]/div/div/button'
-    ).click()
+    # # Submit form
+    # web_driver.find_element(By.XPATH, "//button[@type='submit']").click()
 
 
 def process_flats(
@@ -330,16 +378,26 @@ def process_flats(
         LOG.info(color_me.green(f"Found {len(all_flats)} flat(s) in total."))
         # Save locally
         hpd.save_viewing_offline(
-            start_url, constants.offline_angebote_path, f"{constants.now}"
+            start_url,
+            constants.offline_angebote_path,
+            f"{constants.now}/page_{current_page}",
         )
         log_content = io_operations.read_log_file(constants.log_file_path)
 
-        for i, flat_elem in enumerate(all_flats):
-            time.sleep(1.5)  # Sleep to mimic human behavior and avoid detection
+        for i, flat_elem in enumerate(all_flats.copy()):
+            time.sleep(2)  # Sleep to mimic human behavior and avoid detection
 
-            flat_obj = flat.Flat(flat_elem.text)  # Create flat object
+            # Refresh Flat Elements to avoid stale
+            all_flats = find_flats(web_driver)
+            flat_elem = all_flats[i]
+
+            # Create flat object
+            flat_obj = flat.Flat(flat_elem.text)
 
             for email in user_profile.emails:
+                all_flats = find_flats(web_driver)
+                flat_elem = all_flats[i]
+                # Proceed to check whether we should apply to the flat or skip
                 if not check_flat_already_applied(flat_obj, email, log_content):
                     if contains_filter_keywords(flat_elem, user_profile.filter)[0]:
                         LOG.warning(
@@ -349,12 +407,17 @@ def process_flats(
                         )
                         break
                     else:
-                        LOG.info(color_me.cyan(f"Applying to flat: {flat_obj.title}"))
+                        LOG.info(
+                            color_me.cyan(
+                                f"Applying to flat: {flat_obj.title} for {email}"
+                            )
+                        )
                         apply_to_flat(web_driver, flat_elem, user_profile, email)
-                        log_entry = f"[{constants.today}] - Application sent for flat: {flat_obj.title}\n"
+                        download_expose_as_pdf(web_driver, flat_obj.title)
+                        log_entry = f"[{constants.today}] - [{email}] - Application sent for flat: {flat_obj.title} | {flat_obj.hash}\n"
                         io_operations.write_log_file(constants.log_file_path, log_entry)
                         LOG.info(color_me.green("Done!"))
-                        time.sleep(1.5)
+                        time.sleep(2)
                         web_driver.get(start_url)
                 else:
                     LOG.warning(

@@ -68,3 +68,19 @@ def read_log_file(log_file: str):
     """Read and return the content of the log file."""
     with open(log_file, "r") as myfile:
         return myfile.read()
+
+
+def create_directory_if_not_exists(directory_path: str) -> None:
+    """
+    Create a directory if it does not exist.
+
+    Args:
+        directory_path (str): The path of the directory to be created.
+
+    Returns:
+        None
+    """
+    try:
+        os.makedirs(directory_path, exist_ok=True)
+    except OSError as e:
+        LOG.error(color_me.red(f"Error to create directory ({directory_path}): {e}"))

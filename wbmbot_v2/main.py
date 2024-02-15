@@ -73,7 +73,6 @@ if __name__ == "__main__":
     start_url = constants.wbm_url if not args.test else constants.test_wbm_url
 
     ###### Start the magic ######
-    flats = []
     current_page = 1
     previous_page = 1
     page_changed = False

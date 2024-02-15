@@ -20,6 +20,7 @@ def setup_wbm_config():
     # Collect user information through input prompts
     data["first_name"] = input("Please input your first name and confirm with enter: ")
     data["last_name"] = input("Please input your last name and confirm with enter: ")
+    data["sex"] = input("Please input your sex/gender (m, f, d): ")
 
     # Collect multiple email addresses and store them in a list
     emails = []
@@ -60,10 +61,14 @@ def setup_wbm_config():
         data["wbs_rooms"] = input(
             "For how many rooms is your WBS valid? Please enter a number: "
         )
+        data["wbs_special_housing_needs"] = input(
+            "Do you have special housing needs? Please type yes / no: "
+        )
     else:
         data["wbs_date"] = ""
         data["wbs_num"] = ""
         data["wbs_rooms"] = ""
+        data["wbs_special_housing_needs"] = ""
 
     # Collect keywords to filter out specific flats
     if (

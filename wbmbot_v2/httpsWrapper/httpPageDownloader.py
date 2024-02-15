@@ -1,7 +1,10 @@
 import logging
+import os
 import warnings
 
+import requests
 from pywebcopy import save_webpage
+from utility import io_operations
 
 # Suppress PyWebCopy's logging
 logging.getLogger("pywebcopy").setLevel(logging.CRITICAL)
@@ -34,3 +37,33 @@ def save_viewing_offline(url: str, save_path: str, name: str):
         delay=None,  # Set a delay between requests
         threaded=True,  # Use threading for faster download
     )
+
+
+def download_pdf_file(url: str, local_dir: str) -> None:
+    """
+    Download a PDF file from the given URL to the local directory.
+
+    Args:
+        url (str): The URL of the PDF to be downloaded.
+        local_dir (str): The local directory path to save the downloaded PDF.
+
+    Returns:
+        None
+    """
+    try:
+        response = requests.get(url)
+        response.raise_for_status()  # Raise exception if response is not OK
+
+        io_operations.create_directory_if_not_exists(local_dir)
+        file_name = url.split("/")[-1]
+        file_path = os.path.join(local_dir, file_name)
+
+        print(file_name)
+
+        with open(file_path, "wb") as pdf_file:
+            for chunk in response.iter_content(chunk_size=1024):
+                if chunk:
+                    pdf_file.write(chunk)
+
+    except requests.exceptions.RequestException as e:
+        None

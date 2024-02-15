@@ -34,6 +34,11 @@ class User:
 
         self.first_name = self.config.get("first_name", "")
         self.last_name = self.config.get("last_name", "")
+        self.sex = (
+            "Frau"
+            if self.config.get("sex", "") == "f"
+            else "Herr" if self.config.get("sex", "") == "m" else "Offen"
+        )
         self.street = self.config.get("street", "")
         self.zip_code = self.config.get("zip_code", "")
         self.city = self.config.get("city", "")
@@ -42,17 +47,20 @@ class User:
         self.wbs = "yes" in self.config.get("wbs", "").lower()
         self.wbs_date = self.config.get("wbs_date", "").replace("/", "")
         self.wbs_rooms = self.config.get("wbs_rooms", "")
+        self.wbs_special_housing_needs = (
+            "yes" in self.config.get("wbs_special_housing_needs", "").lower()
+        )
         self.filter = self.config.get("filter", [])
 
         # Determine the WBS number category based on the provided wbs_num value
-        wbs_num = self.config.get("wbs_num", "")
-        if "100" in wbs_num:
+        self.wbs_num = self.config.get("wbs_num", "")
+        if "100" in self.wbs_num:
             self.wbs_num = "WBS 100"
-        elif "140" in wbs_num:
+        elif "140" in self.wbs_num:
             self.wbs_num = "WBS 140"
-        elif "160" in wbs_num:
+        elif "160" in self.wbs_num:
             self.wbs_num = "WBS 160"
-        elif "180" in wbs_num:
+        elif "180" in self.wbs_num:
             self.wbs_num = "WBS 180"
         else:
             self.wbs_num = ""
