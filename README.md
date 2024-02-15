@@ -13,7 +13,7 @@
   - [Outputs](#outputs)
   - [Command-Line Interface](#command-line-interface)
   - [Docker](#docker)
-    - [Building](#building)
+    - [Build](#build)
     - [Pull](#pull)
     - [Run](#run)
   - [Filtering Strategy](#filtering-strategy)
@@ -37,7 +37,7 @@ WBMBOT_v2 is a Selenium-based Python bot designed to automate the application pr
 To set up your environment and install the required dependencies, run the following command:
 
 ```bash
-pip install -r requirements.txt
+pip install -r wbmbot_v2/requirements.txt
 ```
 
 ## Quick Start
@@ -106,7 +106,7 @@ options:
 
 ## Docker
 
-### Building
+### Build
 
 >docker build -f ci/docker/Dockerfile -t wbmbot_v2 .
 
@@ -122,7 +122,7 @@ docker run -it \
     -v /PATH_HERE/offline_viewings:/home/offline_viewings \
     -v /PATH_HERE/logging:/home/logging \
     -v /PATH_HERE/configs:/home/configs \
-    wbmbot_v2:latest
+    vel7an/wbmbot_v2:latest
 ```
 
 ## Filtering Strategy
