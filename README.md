@@ -3,6 +3,7 @@
   - [Installation](#installation)
   - [Quick Start](#quick-start)
     - [Configuration File Example](#configuration-file-example)
+  - [Outputs](#outputs)
   - [Command-Line Interface](#command-line-interface)
   - [Filtering Strategy](#filtering-strategy)
   - [Logging](#logging)
@@ -47,6 +48,7 @@ Alternatively, you can manually create the `configs/wbm_config.json` file with t
 {
     "first_name": "JOHN",
     "last_name": "DOE",
+    "sex": "m",
     "emails": [
         "XXX@protonmail.com",
         "YYY@protonmail.com"
@@ -59,9 +61,21 @@ Alternatively, you can manually create the `configs/wbm_config.json` file with t
     "wbs_date": "23/04/1972",
     "wbs_num": "WBS 160",
     "wbs_rooms": "2",
+    "wbs_special_housing_needs": "no",
     "filter": ["wbs", "2-zimmer", "2 zimmer", "2 zim", "2-zim"]
 }
 ```
+
+## Outputs
+
+You will get outputs such as:
+
+- Angebote HTML page (Entire HTML page) saved under `offline_viewings/angebote_pages` if ANY flats are found
+- EXPOSE PDF saved under `offline_viewings/apartments_expose_pdfs` if the bot applies to a flat
+
+All of these files are saved per bot page-check. e.g. if the angebote page has at least 1 flat, everytime the bot wants to check that page it will download under a nested folder with date and time as its name.
+
+Remember to do a clean-up if you don't want to view them!
 
 ## Command-Line Interface
 
