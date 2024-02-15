@@ -5,6 +5,10 @@
     - [Configuration File Example](#configuration-file-example)
   - [Outputs](#outputs)
   - [Command-Line Interface](#command-line-interface)
+  - [Docker](#docker)
+    - [Building](#building)
+    - [Pull](#pull)
+    - [Run](#run)
   - [Filtering Strategy](#filtering-strategy)
   - [Logging](#logging)
   - [Additional Information](#additional-information)
@@ -92,6 +96,27 @@ options:
   -t, --test            Perform a test run using test data. Does not connect to wbm.de.
 ```
 
+## Docker
+
+### Building
+
+>docker build -f ci/docker/Dockerfile -t wbmbot_v2 .
+
+### Pull
+
+>docker pull vel7an/wbmbot_v2:latest
+
+### Run
+
+If running for the first time, use `-it` to setup your config, if you already have the config ready in the correct directory, use `-d`
+```bash
+docker run -it \
+    -v /PATH_HERE/offline_viewings:/home/offline_viewings \
+    -v /PATH_HERE/logging:/home/logging \
+    -v /PATH_HERE/configs:/home/configs \
+    wbmbot_v2:latest
+```
+
 ## Filtering Strategy
 
 The filter list is designed to exclude listings based on specified keywords. Simply add your exclusion keywords to the list.
@@ -125,6 +150,6 @@ As of now, there are no timeouts, bot checks, or captchas on the website (which 
 - [X] Download the 'Angebote' page as an HTML for records keeping
 - [X] Download the viewing of an apartment as a PDF (Available on WBM) for records keeping
 - [ ] Automatically detect if internet network connection is down and pause/restart once back
-- [ ] Make a docker container out of the bot
+- [X] Make a docker container out of the bot
 - [ ] Make an compiled exec of the bot
 - [ ] CI/CD for Github (?)

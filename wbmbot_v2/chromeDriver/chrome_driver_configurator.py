@@ -25,6 +25,7 @@ class ChromeDriverConfigurator:
         """
         self.chrome_options.add_argument("--disable-extensions")
         self.chrome_options.add_argument("--disable-gpu")
+        self.chrome_options.add_argument("--no-sandbox")
         self.chrome_options.add_argument("--disable-logging")
         self.chrome_options.add_argument("--log-level=3")
         self.chrome_options.add_argument("--headless") if self.headless_off else None
@@ -35,13 +36,13 @@ class ChromeDriverConfigurator:
         """
         Creates the driver with the specified ChromeOptions
         """
-        driver = webdriver.Chrome(
+        self.driver = webdriver.Chrome(
             service=Service(ChromeDriverManager().install()),
             options=self.chrome_options,
         )
         # Wait 5 seconds before doing stuff
-        driver.implicitly_wait(5)
-        return driver
+        self.driver.implicitly_wait(5)
+        return self.driver
 
     def get_driver(self):
         return self.driver

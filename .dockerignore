@@ -1,0 +1,10 @@
+# Files
+*.log
+*.txt
+*.json
+# Folders
+**/__pycache__
+offline_viewings/angebote_pages/**
+offline_viewings/apartments_expose_pdfs/**
+# Exclude
+!requirements.txt
