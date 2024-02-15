@@ -1,6 +1,7 @@
 ![Docker Pulls](https://img.shields.io/docker/pulls/vel7an/wbmbot_v2?style=flat-square&logo=docker&label=DOCKER%20PULLS) ![Docker Image Size](https://img.shields.io/docker/image-size/vel7an/wbmbot_v2?style=flat-square&logo=docker&label=IMAGE%20SIZE)
 
- ![GitHub commit activity](https://img.shields.io/github/commit-activity/m/vel-san/wbmbot_v2?style=flat-square&logo=github&label=COMMITS) ![GitHub repo size](https://img.shields.io/github/repo-size/vel-san/wbmbot_v2?style=flat-square&logo=github&label=REPO%20SIZE) ![GitHub forks](https://img.shields.io/github/forks/vel-san/wbmbot_v2?style=flat-square&logo=github&label=FORKS) ![GitHub Repo stars](https://img.shields.io/github/stars/vel-san/wbmbot_v2?style=flat-square&logo=github&label=STARS)
+ ![GitHub commit activity](https://img.shields.io/github/commit-activity/m/vel-san/wbmbot_v2?style=flat-square&logo=github&label=COMMITS) ![GitHub repo size](https://img.shields.io/github/repo-size/vel-san/wbmbot_v2?style=flat-square&logo=github&label=REPO%20SIZE) ![GitHub forks](https://img.shields.io/github/forks/vel-san/wbmbot_v2?style=flat-square&logo=github&label=FORKS) ![GitHub Repo stars](https://img.shields.io/github/stars/vel-san/wbmbot_v2?style=flat-square&logo=github&label=STARS) ![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/vel-san/wbmbot_v2/docker-build-push.yml?style=flat-square&logo=github&label=BUILD%20STATUS)
+
 
  ![Code Format](https://img.shields.io/badge/CODE%20FORMAT-BLACK-black?style=flat-square&logo=python)
 
