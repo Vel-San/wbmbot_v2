@@ -5,11 +5,9 @@ from handlers import flat
 from helpers import constants
 from httpsWrapper import httpPageDownloader as hpd
 from logger import wbm_logger
-from selenium.common.exceptions import (
-    NoSuchElementException,
-    StaleElementReferenceException,
-    TimeoutException,
-)
+from selenium.common.exceptions import (NoSuchElementException,
+                                        StaleElementReferenceException,
+                                        TimeoutException)
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
@@ -255,8 +253,6 @@ def accept_cookies(web_driver):
         LOG.info(color_me.green("Cookies have been accepted."))
         return True
     except TimeoutException as e:
-        # If the cookie dialog does not appear within the timeout, log a message
-        LOG.warning(color_me.yellow("No cookie dialog appeared within the timeout."))
         return False
 
 
