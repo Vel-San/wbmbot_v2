@@ -160,4 +160,4 @@ As of now, there are no timeouts, bot checks, or captchas on the website (which 
 - [ ] Automatically detect if internet network connection is down and pause/restart once back
 - [X] Make a docker container out of the bot
 - [ ] Make an compiled exec of the bot
-- [ ] CI/CD for Github (?)
+- [X] CI/CD for Github
