@@ -1,7 +1,7 @@
 # Use a minimal Ubuntu base image
 FROM ubuntu:latest
 
-LABEL VERSION="1.0.0"
+LABEL VERSION="1.0.1"
 LABEL MAINTAINER="Vel-San | vel-san@protonmail.com"
 LABEL DESCRIPTION="A docker image that has all required dependenices for the bot to run"
 
@@ -38,4 +38,4 @@ COPY wbmbot_v2/ /home/wbmbot_v2
 RUN pip3 install --no-cache-dir -r /home/wbmbot_v2/requirements.txt
 
 # Command to run the bot
-CMD ["python3", "/home/wbmbot_v2/main.py"]
+CMD ["python3", "/home/wbmbot_v2/main.py", "-H"]

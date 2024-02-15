@@ -18,7 +18,7 @@ def parse_args():
 
     parser = argparse.ArgumentParser(
         description="A Selenium-based bot that scrapes 'WBM Angebote' page and auto applies on appartments based on user exclusion filters",
-        usage="%(prog)s " "[-i] " "[-H] " "[-t]",
+        usage="%(prog)s " "[-i INTERVAL] " "[-H] " "[-t]",
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
 
@@ -32,12 +32,12 @@ def parse_args():
     )
     parser.add_argument(
         "-H",
-        "--headless_off",
-        dest="headless_off",
-        action="store_false",
-        default=True,
+        "--headless",
+        dest="headless",
+        action="store_true",
+        default=False,
         required=False,
-        help="If set, turn 'OFF' headless run. The bot will run directly in the browser.",
+        help="If set, use 'headless' run. The bot will run in the background, otherwise, a chrome tab will show.",
     )
     parser.add_argument(
         "-t",
@@ -61,7 +61,7 @@ if __name__ == "__main__":
 
     # Create ChromeDriver
     LOG.info(color_me.cyan("Initializing Script"))
-    chrome_driver_instance = cdc.ChromeDriverConfigurator(args.headless_off, args.test)
+    chrome_driver_instance = cdc.ChromeDriverConfigurator(args.headless, args.test)
     web_driver = chrome_driver_instance.get_driver()
 
     # Create WBM Config

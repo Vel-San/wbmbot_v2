@@ -94,14 +94,14 @@ Remember to do a clean-up if you don't want to view them!
 ```bash
 usage: main.py [-i INTERVAL] [-H] [-t]
 
-Automates the application process for flats on the 'WBM Angebote' page, respecting user-defined exclusion filters.
+A Selenium-based bot that scrapes 'WBM Angebote' page and auto applies on appartments based on user exclusion filters
 
 options:
-  -h, --help            Show this help message and exit.
+  -h, --help            show this help message and exit
   -i INTERVAL, --interval INTERVAL
-                        Set the refresh interval in 'minutes' for checking new flats on wbm.de. [default: 3 minutes]
-  -H, --headless_off    Disable headless mode. The bot will run in a visible browser window.
-  -t, --test            Perform a test run using test data. Does not connect to wbm.de.
+                        Set the time interval in 'minutes' to check for new flats (refresh) on wbm.de. [default: 3 minutes]
+  -H, --headless        If set, use 'headless' run. The bot will run in the background, otherwise, a chrome tab will show.
+  -t, --test            If set, run test-run on the test data. This does not actually connect to wbm.de.
 ```
 
 ## Docker
