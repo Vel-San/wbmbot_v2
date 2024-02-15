@@ -1,3 +1,9 @@
+![Docker Pulls](https://img.shields.io/docker/pulls/vel7an/wbmbot_v2?style=flat-square&logo=docker&label=DOCKER%20PULLS) ![Docker Image Size](https://img.shields.io/docker/image-size/vel7an/wbmbot_v2?style=flat-square&logo=docker&label=IMAGE%20SIZE)
+
+ ![GitHub commit activity](https://img.shields.io/github/commit-activity/m/vel-san/wbmbot_v2?style=flat-square&logo=github&label=COMMITS) ![GitHub repo size](https://img.shields.io/github/repo-size/vel-san/wbmbot_v2?style=flat-square&logo=github&label=REPO%20SIZE) ![GitHub forks](https://img.shields.io/github/forks/vel-san/wbmbot_v2?style=flat-square&logo=github&label=FORKS) ![GitHub Repo stars](https://img.shields.io/github/stars/vel-san/wbmbot_v2?style=flat-square&logo=github&label=STARS)
+
+ ![Code Format](https://img.shields.io/badge/CODE%20FORMAT-BLACK-black?style=flat-square&logo=python)
+
 - [WBMBOT\_v2](#wbmbot_v2)
   - [Prerequisites](#prerequisites)
   - [Installation](#installation)
@@ -13,6 +19,7 @@
   - [Logging](#logging)
   - [Additional Information](#additional-information)
   - [TODO](#todo)
+
 
 # WBMBOT_v2
 
