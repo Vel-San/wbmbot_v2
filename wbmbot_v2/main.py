@@ -8,6 +8,7 @@ from logger import wbm_logger
 from utility import io_operations
 
 __appname__ = os.path.splitext(os.path.basename(__file__))[0]
+os.environ["WDM_LOG"] = "0"
 
 
 def parse_args():
