@@ -373,7 +373,7 @@ def process_flats(
         if not all_flats:
             LOG.info(color_me.cyan("Currently no flats available 😔"))
             time.sleep(int(refresh_internal) * 60)
-            return
+            continue
 
         LOG.info(color_me.green(f"Found {len(all_flats)} flat(s) in total."))
         # Save locally
@@ -405,7 +405,7 @@ def process_flats(
                                 f"Ignoring flat '{flat_obj.title}' because it contains filter keyword(s) --> {contains_filter_keywords(flat_elem, user_profile.filter)[1]}"
                             )
                         )
-                        break
+                        continue
                     else:
                         LOG.info(
                             color_me.cyan(
@@ -425,7 +425,7 @@ def process_flats(
                             f"Oops, we already applied for flat: {flat_obj.title}!"
                         )
                     )
-                    break
+                    continue
 
             # Try to switch to next page if exists, in the last iteration
             if i == len(all_flats) - 1:
