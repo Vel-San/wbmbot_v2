@@ -340,11 +340,11 @@ def apply_to_flat(web_driver, flat_element, user_profile, email):
     # Find and click continue button on current flat
     continue_btn(web_driver, flat_element)
 
-    # # Fill out application form on current flat using info stored in user object
-    # fill_form(web_driver, user_profile, email)
+    # Fill out application form on current flat using info stored in user object
+    fill_form(web_driver, user_profile, email)
 
-    # # Submit form
-    # web_driver.find_element(By.XPATH, "//button[@type='submit']").click()
+    # Submit form
+    web_driver.find_element(By.XPATH, "//button[@type='submit']").click()
 
 
 def process_flats(
