@@ -79,7 +79,7 @@ def download_expose_as_pdf(web_driver, flat_name: str):
     # Log the attempt to find the continue button
     LOG.info(color_me.cyan(f"Attempting to download expose for '{flat_name}'"))
 
-    # Attempt to find the continue button by its XPath
+    # Attempt to find the expose download button by its XPath
     download_button = web_driver.find_element(
         By.XPATH, "//a[@class='openimmo-detail__intro-expose-button btn download']"
     )
@@ -93,40 +93,41 @@ def download_expose_as_pdf(web_driver, flat_name: str):
     return pdf_path
 
 
-def continue_btn(web_driver, flat_element):
+def ansehen_btn(web_driver, flat_element, index: int):
     """
-    Finds and clicks the 'continue' button to navigate to the details page of a flat.
+    Finds and clicks the 'ansehen' button to navigate to the details page of a flat.
 
     This function searches for a button with the title "Details", logs its href attribute,
     scrolls it into view, and navigates to the linked details page.
     """
 
     try:
-        # Log the attempt to find the continue button
-        LOG.info(color_me.cyan("Looking for continue button"))
-
-        # Attempt to find the continue button by its XPath
-        continue_button = flat_element.find_element(By.XPATH, "//a[@title='Details']")
+        # Log the attempt to find the ansehen button
+        LOG.info(color_me.cyan("Looking for 'ansehen' button"))
+        # Attempt to find the ansehen button by its XPath
+        ansehen_button = flat_element.find_element(
+            By.XPATH, f"(//a[@title='Details'][contains(.,'Ansehen')])[{index+1}]"
+        )
 
         # Log the href attribute of the found button
-        flat_link = continue_button.get_attribute("href")
+        flat_link = ansehen_button.get_attribute("href")
         LOG.info(color_me.green(f"Flat link found: {flat_link}"))
 
         # Scroll the button into view
-        continue_button.location_once_scrolled_into_view
+        ansehen_button.location_once_scrolled_into_view
 
-        # Navigate to the href of the continue button
+        # Navigate to the href of the ansehen button
         web_driver.get(flat_link)
         return flat_link
     except NoSuchElementException as e:
-        # Log an error if the continue button is not found
-        LOG.error(color_me.red("Continue button not found."))
+        # Log an error if the Ansehen button is not found
+        LOG.error(color_me.red(f"'Ansehen' button not found. | {e}"))
     except StaleElementReferenceException as e:
-        # Log an error if the continue button is stale
-        LOG.error(color_me.red("Stale 'Continue' button."))
+        # Log an error if the Ansehen button is stale
+        LOG.error(color_me.red(f"Stale 'Ansehen' button. | {e}"))
 
 
-def fill_form(web_driver, user_obj, email):
+def fill_form(web_driver, user_obj, email: str, test: str):
     """
     Fills out a web form with user information and a specified email address.
 
@@ -144,7 +145,7 @@ def fill_form(web_driver, user_obj, email):
         LOG.info(color_me.cyan(f"Filling out form for email address '{email}'"))
 
         # If the user has WBS
-        if user_obj.wbs:
+        if user_obj.wbs and not test:
             # Click the radio button or checkbox before filling in text fields
             web_driver.find_element(
                 By.XPATH, "//label[@for='powermail_field_wbsvorhanden_1']"
@@ -223,6 +224,7 @@ def fill_form(web_driver, user_obj, email):
             By.XPATH, "//label[@for='powermail_field_datenschutzhinweis_1']"
         ).click()
 
+        time.sleep(10) if test else None
     except NoSuchElementException as e:
         # Log an error if any element is not found
         LOG.error(
@@ -335,28 +337,39 @@ def contains_filter_keywords(flat_elem, user_filters):
     return (bool(keywords_found), keywords_found)
 
 
-def apply_to_flat(web_driver, flat_element, flat_title, user_profile, email):
+def apply_to_flat(
+    web_driver,
+    flat_element,
+    flat_index: int,
+    flat_title: str,
+    user_profile,
+    email: str,
+    test: bool,
+):
     """Apply to the flat using the provided email."""
 
     # Find and click "Ansehen" button on current flat
-    flat_link = continue_btn(web_driver, flat_element)
+    flat_link = ansehen_btn(web_driver, flat_element, flat_index)
 
     # Fill out application form on current flat using info stored in user object
-    fill_form(web_driver, user_profile, email)
+    fill_form(web_driver, user_profile, email, test)
 
     # Download as PDF
-    pdf_path = download_expose_as_pdf(web_driver, flat_title)
+    if not test:
+        pdf_path = download_expose_as_pdf(web_driver, flat_title)
 
     # Submit form
-    web_driver.find_element(By.XPATH, "//button[@type='submit']").click()
+    if not test:
+        web_driver.find_element(By.XPATH, "//button[@type='submit']").click()
 
     # Send e-mail
-    notifications.send_email_notification(
-        email,
-        f"[Applied] {flat_title}",
-        f"Appartment Link: {flat_link}\n\nYour Profile: {user_profile}",
-        pdf_path,
-    )
+    if not test:
+        notifications.send_email_notification(
+            email,
+            f"[Applied] {flat_title}",
+            f"Appartment Link: {flat_link}\n\nYour Profile: {user_profile}",
+            pdf_path,
+        )
 
 
 def process_flats(
@@ -367,6 +380,7 @@ def process_flats(
     previous_page: int,
     page_changed: bool,
     refresh_internal: int,
+    test: bool,
 ):
     """Process each flat by checking criteria and applying if applicable."""
 
@@ -388,27 +402,30 @@ def process_flats(
             continue
 
         LOG.info(color_me.green(f"Found {len(all_flats)} flat(s) in total."))
+
         # Save locally
-        hpd.save_viewing_offline(
-            start_url,
-            constants.offline_angebote_path,
-            f"{constants.now}/page_{current_page}",
-        )
+        if not test:
+            hpd.save_viewing_offline(
+                start_url,
+                constants.offline_angebote_path,
+                f"{constants.now}/page_{current_page}",
+            )
         log_content = io_operations.read_log_file(constants.log_file_path)
 
-        for i, flat_elem in enumerate(all_flats.copy()):
+        for i, flat_elem in enumerate(all_flats):
             time.sleep(2)  # Sleep to mimic human behavior and avoid detection
 
-            # Refresh Flat Elements to avoid stale
+            # Refresh Flat Elements to avoid staleness
             all_flats = find_flats(web_driver)
             flat_elem = all_flats[i]
-
             # Create flat object
-            flat_obj = flat.Flat(flat_elem.text)
+            flat_obj = flat.Flat(flat_elem.text, test)
+
+            if test:
+                LOG.info(color_me.magenta(f"Flat Element: {flat_elem.text}"))
+                LOG.info(color_me.magenta(f"Flat Obj: {flat_obj}"))
 
             for email in user_profile.emails:
-                all_flats = find_flats(web_driver)
-                flat_elem = all_flats[i]
                 # Proceed to check whether we should apply to the flat or skip
                 if not check_flat_already_applied(flat_obj, email, log_content):
                     if contains_filter_keywords(flat_elem, user_profile.filter)[0]:
@@ -425,13 +442,23 @@ def process_flats(
                             )
                         )
                         apply_to_flat(
-                            web_driver, flat_elem, flat_obj.title, user_profile, email
+                            web_driver,
+                            flat_elem,
+                            i,
+                            flat_obj.title,
+                            user_profile,
+                            email,
+                            test,
                         )
                         log_entry = f"[{constants.today}] - [{email}] - Application sent for flat: {flat_obj.title} | {flat_obj.hash}\n"
                         io_operations.write_log_file(constants.log_file_path, log_entry)
                         LOG.info(color_me.green("Done!"))
-                        time.sleep(2)
+                        time.sleep(1.5)
                         web_driver.get(start_url)
+                        time.sleep(1.5)
+                        # Refresh Flat Elements for each email iteration to avoid staleness
+                        all_flats = find_flats(web_driver)
+                        flat_elem = all_flats[i]
                 else:
                     LOG.warning(
                         color_me.yellow(

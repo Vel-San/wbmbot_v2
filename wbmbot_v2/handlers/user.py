@@ -62,5 +62,9 @@ class User:
             self.wbs_num = "WBS 160"
         elif "180" in self.wbs_num:
             self.wbs_num = "WBS 180"
+        elif "220" in self.wbs_num:
+            self.wbs_num = "WBS 220"
+        elif "240" in self.wbs_num:
+            self.wbs_num = "WBS 240"
         else:
             self.wbs_num = ""

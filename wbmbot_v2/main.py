@@ -65,7 +65,11 @@ if __name__ == "__main__":
     web_driver = chrome_driver_instance.get_driver()
 
     # Create WBM Config
-    wbm_config = io_operations.load_wbm_config(constants.wbm_config_name)
+    wbm_config = (
+        io_operations.load_wbm_config(constants.wbm_config_name)
+        if not args.test
+        else io_operations.load_wbm_config(constants.wbm_test_config_name)
+    )
     # Create User Profile
     user_profile = user.User(wbm_config)
     # Create Logger file
@@ -87,6 +91,7 @@ if __name__ == "__main__":
         previous_page,
         page_changed,
         args.interval,
+        args.test,
     )
 
 # driver.quit()

@@ -21,7 +21,7 @@ class Flat:
         hash (str): A SHA-256 hash of the flat listing details.
     """
 
-    def __init__(self, flat_elem):
+    def __init__(self, flat_elem, test: bool):
         """
         Constructs all the necessary attributes for the flat object.
 
@@ -29,16 +29,22 @@ class Flat:
             flat_elem (str): The string representation of the flat listing.
         """
         self.flat_elem = flat_elem
+        self.test = test
         self.flat_attr = self.flat_elem.split("\n")
         self.attr_size = len(self.flat_attr)
+        print(self.flat_attr) if self.test else None
 
-        self.title = self.flat_attr[0] if self.attr_size > 0 else ""
-        self.district = self.flat_attr[4] if self.attr_size > 4 else ""
-        self.street = self.flat_attr[5] if self.attr_size > 5 else ""
-        self.zip_code = self.flat_attr[6].split(" ")[0] if self.attr_size > 6 else ""
-        self.city = self.flat_attr[6].split(" ")[1] if self.attr_size > 6 else ""
-        self.total_rent = self.flat_attr[8] if self.attr_size > 8 else ""
-        self.size = self.flat_attr[10] if self.attr_size > 10 else ""
-        self.rooms = self.flat_attr[12] if self.attr_size > 12 else ""
-        self.wbs = "wbs" in self.flat_elem.lower()
+        (
+            self.title,
+            self.district,
+            self.street,
+            address,
+            self.total_rent,
+            self.size,
+            self.rooms,
+            *_,
+        ) = self.flat_attr
+        self.zip_code, self.city = address.split()
+        self.zip_code = self.zip_code.strip()
+        self.wbs = "wbs" in self.title.lower() or "wbs" in self.flat_elem.lower()
         self.hash = hashlib.sha256(self.flat_elem.encode("utf-8")).hexdigest()

@@ -12,6 +12,7 @@ email_password = os.environ.get("EMAIL_PASSWORD")
 
 # WBM Config File Name
 wbm_config_name = f"{os.getcwd()}/configs/wbm_config.json"
+wbm_test_config_name = f"{os.getcwd()}/test-data/wbm_test_config.json"
 
 # Applications Logger that we applied for
 log_file_path = f"{os.getcwd()}/logging/successful_applications.txt"
@@ -25,4 +26,4 @@ offline_apartment_path = f"{os.getcwd()}/offline_viewings/apartments_expose_pdfs
 
 # URLs
 wbm_url = "https://www.wbm.de/wohnungen-berlin/angebote/"
-test_wbm_url = f"file://{os.getcwd()}/test-data/wohnung_mehrere_seiten.html"
+test_wbm_url = f"file://{os.getcwd()}/test-data/angebote.html"

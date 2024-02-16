@@ -1,0 +1,18 @@
+{
+    "first_name": "John",
+    "last_name": "Doe",
+    "sex": "m",
+    "emails": [
+        "random_user@outlook.com"
+    ],
+    "street": "ABC. 123",
+    "zip_code": "11223",
+    "city": "Berlin",
+    "phone": "49112233",
+    "wbs": "yes",
+    "wbs_date": "01/01/2000",
+    "wbs_num": "140",
+    "wbs_rooms": "3",
+    "wbs_special_housing_needs": "no",
+    "filter": ["1-zimmer"]
+}
