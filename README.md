@@ -5,7 +5,6 @@
 ![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/vel-san/wbmbot_v2/docker-build-push.yml?style=flat-square&logo=github&label=BUILD%20STATUS)
 ![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/vel-san/wbmbot_v2/check_leaks.yml?style=flat-square&logo=github&label=SECRETS%20LEAKS) ![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/vel-san/wbmbot_v2/github-code-scanning%2Fcodeql?style=flat-square&logo=github&label=CODE%20QUALITY)
 
-
 ![Code Format](https://img.shields.io/badge/CODE%20FORMAT-BLACK-black?style=flat-square&logo=python)
 
 - [WBMBOT\_v2](#wbmbot_v2)
@@ -171,16 +170,15 @@ As of now, there are no timeouts, bot checks, or captchas on the website (which 
 - [X] **HIGH PRIORITY** Fix form filling
 - [X] **HIGH PRIORITY** Fix `next page` logic
 - [X] Add the reason if ignoring a flat (To make sure your filters are working properly) in logging
-- [ ] Change "successful_applications.txt" to JSON type
-- [ ] Add support for multi user wbm_config files
-- [ ] Fix test-data
-- [ ] Make a portable docker image of the bot that can be hosted anywhere
-- [ ] Add "excluded_applications.json" that shows all applications that were excluded by the filter
 - [X] Add color_printer class into the works with the logger
 - [X] Notify via e-mail whenever the bot applies to an application
 - [X] Download the 'Angebote' page as an HTML for records keeping
 - [X] Download the viewing of an apartment as a PDF (Available on WBM) for records keeping
-- [ ] Automatically detect if internet network connection is down and pause/restart once back
 - [X] Make a docker container out of the bot
-- [ ] Make an compiled exec of the bot
 - [X] CI/CD for Github
+- [ ] Change "successful_applications.txt" to JSON type
+- [ ] Add support for multi user wbm_config files
+- [ ] Fix test-data
+- [ ] Add "excluded_applications.json" that shows all applications that were excluded by the filter
+- [ ] Automatically detect if internet network connection is down and pause/restart once back
+- [ ] Make an compiled exec of the bot using pyinstaller
