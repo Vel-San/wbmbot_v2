@@ -153,9 +153,9 @@ The filter list is designed to exclude listings based on specified keywords. Sim
 
 ## Logging
 
-Successful applications are recorded in `logging/successful_applications.txt`.
+Successful applications are recorded in `logging/successful_applications.json`.
 
-**Important**: This log prevents reapplication to the same flats. Do not delete it unless you intend to reapply to all available flats.
+**Important**: This log prevents reapplication to the same flats. ***DO NOT DELETE*** it unless you intend to re-apply to all available flats.
 
 ## Additional Information
 
@@ -177,8 +177,8 @@ As of now, there are no timeouts, bot checks, or captchas on the website (which 
 - [X] Make a docker container out of the bot
 - [X] CI/CD for Github
 - [X] Fix test-data
-- [ ] Change "successful_applications.txt" to JSON type
-- [ ] Add support for multi user wbm_config files
+- [X] Change "successful_applications.txt" to JSON type
+- [ ] ~~Add support for multi user wbm_config files~~
 - [ ] Add "excluded_applications.json" that shows all applications that were excluded by the filter
 - [ ] Automatically detect if internet network connection is down and pause/restart once back
 - [ ] Make an compiled exec of the bot using pyinstaller

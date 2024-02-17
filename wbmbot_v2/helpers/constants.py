@@ -15,7 +15,7 @@ wbm_config_name = f"{os.getcwd()}/configs/wbm_config.json"
 wbm_test_config_name = f"{os.getcwd()}/test-data/wbm_test_config.json"
 
 # Applications Logger that we applied for
-log_file_path = f"{os.getcwd()}/logging/successful_applications.txt"
+log_file_path = f"{os.getcwd()}/logging/successful_applications.json"
 
 # Script Logging
 script_log_path = f"{os.getcwd()}/logging/wbmbot-v2_{today}.log"

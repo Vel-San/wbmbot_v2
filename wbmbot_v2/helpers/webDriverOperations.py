@@ -13,7 +13,7 @@ from selenium.common.exceptions import (
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
-from utility import io_operations
+from utility import io_operations, misc_operations
 
 __appname__ = os.path.splitext(os.path.basename(__file__))[0]
 color_me = wbm_logger.ColoredLogger(__appname__)
@@ -314,29 +314,6 @@ def find_flats(web_driver):
     return web_driver.find_elements(By.CSS_SELECTOR, ".row.openimmo-search-list-item")
 
 
-def check_flat_already_applied(flat_obj, email, log):
-    """Check if an application for the flat has already been sent."""
-
-    return (
-        f"[{email.strip()}] - Application sent for flat: {flat_obj.title} | {flat_obj.hash}"
-        in log
-    )
-
-
-def contains_filter_keywords(flat_elem, user_filters):
-    """Check if the flat contains any of the filter keywords and return the keywords."""
-
-    # Find all keywords that are in the flat_elem's text
-    keywords_found = [
-        keyword
-        for keyword in user_filters
-        if str(keyword).strip().lower() in flat_elem.text.lower()
-    ]
-
-    # Return a tuple of boolean and keywords found
-    return (bool(keywords_found), keywords_found)
-
-
 def apply_to_flat(
     web_driver,
     flat_element,
@@ -410,7 +387,6 @@ def process_flats(
                 constants.offline_angebote_path,
                 f"{constants.now}/page_{current_page}",
             )
-        log_content = io_operations.read_log_file(constants.log_file_path)
 
         for i, flat_elem in enumerate(all_flats):
             time.sleep(2)  # Sleep to mimic human behavior and avoid detection
@@ -427,11 +403,15 @@ def process_flats(
 
             for email in user_profile.emails:
                 # Proceed to check whether we should apply to the flat or skip
-                if not check_flat_already_applied(flat_obj, email, log_content):
-                    if contains_filter_keywords(flat_elem, user_profile.filter)[0]:
+                if not io_operations.check_flat_already_applied(
+                    constants.log_file_path, email, flat_obj
+                ):
+                    if misc_operations.contains_filter_keywords(
+                        flat_elem, user_profile.filter
+                    )[0]:
                         LOG.warning(
                             color_me.yellow(
-                                f"Ignoring flat '{flat_obj.title}' because it contains filter keyword(s) --> {contains_filter_keywords(flat_elem, user_profile.filter)[1]}"
+                                f"Ignoring flat '{flat_obj.title}' because it contains filter keyword(s) --> {misc_operations.contains_filter_keywords(flat_elem, user_profile.filter)[1]}"
                             )
                         )
                         continue
@@ -450,8 +430,9 @@ def process_flats(
                             email,
                             test,
                         )
-                        log_entry = f"[{constants.today}] - [{email}] - Application sent for flat: {flat_obj.title} | {flat_obj.hash}\n"
-                        io_operations.write_log_file(constants.log_file_path, log_entry)
+                        io_operations.write_log_file(
+                            constants.log_file_path, email, flat_obj
+                        )
                         LOG.info(color_me.green("Done!"))
                         time.sleep(1.5)
                         web_driver.get(start_url)
