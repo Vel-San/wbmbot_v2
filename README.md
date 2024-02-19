@@ -70,6 +70,7 @@ Alternatively, you can manually create the `configs/wbm_config.json` file with t
         "XXX@protonmail.com",
         "YYY@protonmail.com"
     ],
+    "notifications_email": "ZZZ@outlook.com",
     "street": "Doner-Str. 123",
     "zip_code": "12345",
     "city": "Berlin",
@@ -85,7 +86,7 @@ Alternatively, you can manually create the `configs/wbm_config.json` file with t
 
 ## Notifications (E-mails)
 
-The bot will be able to send you e-mail notifications (from YOURSELF) once it applies for a flat.
+The bot will be able to send you e-mail notifications once it applies for a flat from the e-mail you input in `notifications_email` within the config.
 
 To do so, you need to export `EMAIL_PASSWORD` to your environment variables. If this variable is not found, no e-mails will be sent.
 

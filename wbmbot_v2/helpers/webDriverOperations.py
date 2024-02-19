@@ -255,7 +255,7 @@ def accept_cookies(web_driver):
 
         # Click the 'Accept Cookies' button
         web_driver.find_element(By.XPATH, accept_button_xpath).click()
-        LOG.info(color_me.green("Cookies have been accepted."))
+        LOG.info(color_me.green("Cookies have been accepted"))
         return True
     except TimeoutException as e:
         return False
@@ -340,9 +340,10 @@ def apply_to_flat(
         web_driver.find_element(By.XPATH, "//button[@type='submit']").click()
 
     # Send e-mail
-    if not test:
+    if not test and user_profile.notifications_email:
         notifications.send_email_notification(
             email,
+            user_profile.notifications_email,
             f"[Applied] {flat_title}",
             f"Appartment Link: {flat_link}\n\nYour Profile: {user_profile}",
             pdf_path,
@@ -378,7 +379,7 @@ def process_flats(
             time.sleep(int(refresh_internal) * 60)
             continue
 
-        LOG.info(color_me.green(f"Found {len(all_flats)} flat(s) in total."))
+        LOG.info(color_me.green(f"Found {len(all_flats)} flat(s) in total"))
 
         # Save locally
         if not test:

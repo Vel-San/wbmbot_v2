@@ -26,12 +26,17 @@ def setup_wbm_config():
     emails = []
     while True:
         email = input(
-            "Please input email address and confirm with enter, type 'exit' to exit: "
+            "Please input an e-mail address to apply with and confirm with enter, type 'exit' to exit: "
         ).lower()
         if email == "exit":
             break
         emails.append(email)
     data["emails"] = emails
+
+    # Collect user e-mail that will be used for notifications
+    data["notifications_email"] = input(
+        "Please input (or leave empty) the e-mail (@outlook only) that you want to send notifications from: "
+    )
 
     # Collect additional user information
     data["street"] = input(
@@ -56,7 +61,7 @@ def setup_wbm_config():
             "Until when will the WBS be valid? Please enter the date in format month/day/year: "
         )
         data["wbs_num"] = input(
-            "What WBS number does your WBS show? Please enter WBS 100 / WBS 140 / WBS 160 / WBS 180: "
+            "What WBS number does your WBS show? Please enter WBS 100 / WBS 140 / WBS 160 / WBS 180 / WBS 220 / WBS 240: "
         )
         data["wbs_rooms"] = input(
             "For how many rooms is your WBS valid? Please enter a number: "
@@ -90,7 +95,7 @@ def setup_wbm_config():
         data["filter"] = []
 
     # Log the completion of data collection
-    LOG.info(color_me.green("Done! Writing config file"))
+    LOG.info(color_me.green("Done! Writing config file..."))
 
     # Write the collected data to a JSON file
     with open(constants.wbm_config_name, "w") as outfile:

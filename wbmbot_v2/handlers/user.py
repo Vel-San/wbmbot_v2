@@ -43,6 +43,7 @@ class User:
         self.zip_code = self.config.get("zip_code", "")
         self.city = self.config.get("city", "")
         self.emails = self.config.get("emails", [])
+        self.notifications_email = self.config.get("notifications_email", "")
         self.phone = self.config.get("phone", "")
         self.wbs = "yes" in self.config.get("wbs", "").lower()
         self.wbs_date = self.config.get("wbs_date", "").replace("/", "")

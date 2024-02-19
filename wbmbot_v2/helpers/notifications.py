@@ -10,7 +10,7 @@ LOG = color_me.create_logger()
 
 
 def send_email_notification(
-    email: str, subject: str, body: str, attachment: str = None
+    send_to: str, send_from: str, subject: str, body: str, attachment: str = None
 ):
     """Send email notification with optional attachment.
 
@@ -24,7 +24,15 @@ def send_email_notification(
     if not constants.email_password:
         LOG.warning(
             color_me.yellow(
-                f"E-mail password not found in the ENV variables! I will not be able to send you e-mails."
+                f"E-mail password not found in the ENV variables. I will not be able to send you e-mails!"
+            )
+        )
+        return
+
+    if "@outlook.com" not in send_from:
+        LOG.warning(
+            color_me.yellow(
+                f"Notifications e-mail doesn't seem be of '@outlook.com' domain, skipping notifications!"
             )
         )
         return
@@ -32,7 +40,7 @@ def send_email_notification(
     try:
         # Initialize yagmail SMTP connection
         yag = yagmail.SMTP(
-            email,
+            send_from,
             constants.email_password,
             smtp_starttls=True,
             smtp_ssl=False,
@@ -43,12 +51,12 @@ def send_email_notification(
 
         # Send email with attachment if provided
         if attachment:
-            yag.send(to=email, subject=subject, contents=body, attachments=attachment)
+            yag.send(to=send_to, subject=subject, contents=body, attachments=attachment)
         else:
-            yag.send(to=email, subject=subject, contents=body)
+            yag.send(to=send_to, subject=subject, contents=body)
 
-        LOG.info(color_me.green(f"Email notification sent successfully to '{email}'"))
+        LOG.info(color_me.green(f"Email notification sent successfully to '{send_to}'"))
     except Exception as e:
         LOG.error(
-            color_me.red(f"Failed to send email notification to '{email}' | {str(e)}")
+            color_me.red(f"Failed to send email notification to '{send_to}' | {str(e)}")
         )
