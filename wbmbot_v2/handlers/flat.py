@@ -31,9 +31,10 @@ class Flat:
         self.flat_elem = flat_elem
         self.test = test
         self.flat_attr = self.flat_elem.split("\n")
+        if not self.test:
+            self.flat_attr = [item for item in self.flat_attr if item.strip()]
         self.attr_size = len(self.flat_attr)
         print(self.flat_attr) if self.test else None
-
         (
             self.title,
             self.district,
