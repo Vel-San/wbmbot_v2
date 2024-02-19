@@ -21,28 +21,28 @@ def load_wbm_config(file_name: str):
     """
 
     if os.path.isfile(file_name):
-        LOG.info(color_me.cyan("Loading WBM config"))
+        LOG.info(color_me.cyan("⚙️  Loading WBM config"))
         with open(file_name, "r") as config_file:
             try:
                 user_config = json.load(config_file)
                 return user_config
             except json.JSONDecodeError as e:
-                LOG.error(color_me.red(f"Failed to parse WBM config file! ({e})"))
+                LOG.error(color_me.red(f"❌ Failed to parse WBM config file! ({e})"))
             except TypeError as e:
-                LOG.error(color_me.red(f"Failed to parse WBM config file! ({e})"))
+                LOG.error(color_me.red(f"❌ Failed to parse WBM config file! ({e})"))
     else:
-        LOG.warning(color_me.yellow("No WBM config file found, starting setup"))
+        LOG.warning(color_me.yellow("⚠️  No WBM config file found, starting setup"))
         # Setup WBM config from the User
         interaction.setup_wbm_config()
-        LOG.info(color_me.cyan("Loading WBM config"))
+        LOG.info(color_me.cyan("⚙️  Loading WBM config"))
         with open(file_name, "r") as config_file:
             try:
                 user_config = json.load(config_file)
                 return user_config
             except json.JSONDecodeError as e:
-                LOG.error(color_me.red(f"Failed to parse WBM config file! ({e})"))
+                LOG.error(color_me.red(f"❌ Failed to parse WBM config file! ({e})"))
             except TypeError as e:
-                LOG.error(color_me.red(f"Failed to parse WBM config file! ({e})"))
+                LOG.error(color_me.red(f"❌ Failed to parse WBM config file! ({e})"))
 
 
 def initialize_application_logger(log_file: str):
@@ -131,7 +131,7 @@ def create_directory_if_not_exists(directory_path: str) -> None:
     try:
         os.makedirs(directory_path, exist_ok=True)
     except OSError as e:
-        LOG.error(color_me.red(f"Error to create directory ({directory_path}): {e}"))
+        LOG.error(color_me.red(f"❌ Error to create directory ({directory_path}): {e}"))
 
 
 def check_flat_already_applied(log_file: str, email: str, flat_obj):

@@ -95,7 +95,7 @@ def setup_wbm_config():
         data["filter"] = []
 
     # Log the completion of data collection
-    LOG.info(color_me.green("Done! Writing config file..."))
+    LOG.info(color_me.green("✅ Done! Writing config file..."))
 
     # Write the collected data to a JSON file
     with open(constants.wbm_config_name, "w") as outfile:

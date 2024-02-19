@@ -1,11 +1,12 @@
 import argparse
 import os
+import time
 
 from chromeDriver import chrome_driver_configurator as cdc
 from handlers import user
 from helpers import constants, webDriverOperations
 from logger import wbm_logger
-from utility import io_operations
+from utility import io_operations, misc_operations
 
 __appname__ = os.path.splitext(os.path.basename(__file__))[0]
 os.environ["WDM_LOG"] = "0"
@@ -60,7 +61,18 @@ if __name__ == "__main__":
     LOG = color_me.create_logger()
 
     # Create ChromeDriver
-    LOG.info(color_me.cyan("Initializing Script"))
+    LOG.info(color_me.cyan("🚀 Initializing Script"))
+    LOG.info(color_me.cyan("🔎 Checking for internet connection"))
+    while True:
+        if not misc_operations.check_internet_connection():
+            LOG.error(
+                color_me.red("⚠️  No internet connection found. Retrying in 10 seconds!")
+            )
+            time.sleep(10)
+        else:
+            LOG.info(color_me.green("🟢 Online!"))
+            break
+
     chrome_driver_instance = cdc.ChromeDriverConfigurator(args.headless, args.test)
     web_driver = chrome_driver_instance.get_driver()
 
@@ -81,7 +93,7 @@ if __name__ == "__main__":
     current_page = 1
     previous_page = 1
     page_changed = False
-    LOG.info(color_me.cyan(f"Connecting to '{start_url}'"))
+    LOG.info(color_me.cyan(f"🔗 Connecting to '{start_url}'"))
 
     webDriverOperations.process_flats(
         web_driver,

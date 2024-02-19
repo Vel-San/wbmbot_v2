@@ -58,12 +58,12 @@ def next_page(web_driver, current_page: int):
             return current_page + 1
     except NoSuchElementException as e:
         # Log an error if the next page button is not found
-        LOG.error(color_me.red("Failed to switch page, last page reached"))
+        LOG.error(color_me.red("❌ Failed to switch page, last page reached"))
     except Exception as e:
         # Log any other exceptions that occur
         LOG.error(
             color_me.red(
-                f"Failed to switch page, returning to main page | Exception: {e}"
+                f"❌ Failed to switch page, returning to main page | Exception: {e}"
             )
         )
 
@@ -77,7 +77,7 @@ def download_expose_as_pdf(web_driver, flat_name: str):
     """
 
     # Log the attempt to find the continue button
-    LOG.info(color_me.cyan(f"Attempting to download expose for '{flat_name}'"))
+    LOG.info(color_me.cyan(f"📥 Attempting to download expose for '{flat_name}'"))
 
     # Attempt to find the expose download button by its XPath
     download_button = web_driver.find_element(
@@ -103,7 +103,7 @@ def ansehen_btn(web_driver, flat_element, index: int):
 
     try:
         # Log the attempt to find the ansehen button
-        LOG.info(color_me.cyan("Looking for 'ansehen' button"))
+        LOG.info(color_me.cyan("🔎 Looking for 'Ansehen' button"))
         # Attempt to find the ansehen button by its XPath
         ansehen_button = flat_element.find_element(
             By.XPATH, f"(//a[@title='Details'][contains(.,'Ansehen')])[{index+1}]"
@@ -111,7 +111,7 @@ def ansehen_btn(web_driver, flat_element, index: int):
 
         # Log the href attribute of the found button
         flat_link = ansehen_button.get_attribute("href")
-        LOG.info(color_me.green(f"Flat link found: {flat_link}"))
+        LOG.info(color_me.green(f"🎯 Flat link found: {flat_link}"))
 
         # Scroll the button into view
         ansehen_button.location_once_scrolled_into_view
@@ -121,10 +121,10 @@ def ansehen_btn(web_driver, flat_element, index: int):
         return flat_link
     except NoSuchElementException as e:
         # Log an error if the Ansehen button is not found
-        LOG.error(color_me.red(f"'Ansehen' button not found. | {e}"))
+        LOG.error(color_me.red(f"❌ 'Ansehen' button not found. | {e}"))
     except StaleElementReferenceException as e:
         # Log an error if the Ansehen button is stale
-        LOG.error(color_me.red(f"Stale 'Ansehen' button. | {e}"))
+        LOG.error(color_me.red(f"❌ Stale 'Ansehen' button. | {e}"))
 
 
 def fill_form(web_driver, user_obj, email: str, test: str):
@@ -142,7 +142,7 @@ def fill_form(web_driver, user_obj, email: str, test: str):
 
     try:
         # Log the start of the form filling process
-        LOG.info(color_me.cyan(f"Filling out form for email address '{email}'"))
+        LOG.info(color_me.cyan(f"🤖 Filling out form for email address '{email}'"))
 
         # If the user has WBS
         if user_obj.wbs and not test:
@@ -228,7 +228,7 @@ def fill_form(web_driver, user_obj, email: str, test: str):
     except NoSuchElementException as e:
         # Log an error if any element is not found
         LOG.error(
-            color_me.red(f"Element not found during form filling. Exception: {e}")
+            color_me.red(f"❌ Element not found during form filling. Exception: {e}")
         )
 
 
@@ -255,7 +255,7 @@ def accept_cookies(web_driver):
 
         # Click the 'Accept Cookies' button
         web_driver.find_element(By.XPATH, accept_button_xpath).click()
-        LOG.info(color_me.green("Cookies have been accepted"))
+        LOG.info(color_me.green("🍪 Cookies have been accepted"))
         return True
     except TimeoutException as e:
         return False
@@ -363,6 +363,14 @@ def process_flats(
     """Process each flat by checking criteria and applying if applicable."""
 
     while True:
+
+        if not misc_operations.check_internet_connection():
+            LOG.error(
+                color_me.red("⚠️  No internet connection found. Retrying in 10 seconds!")
+            )
+            time.sleep(10)
+            continue
+
         if not page_changed:
             current_page, previous_page = reset_to_start_page(
                 web_driver, start_url, current_page, previous_page
@@ -372,14 +380,14 @@ def process_flats(
         close_live_chat_button(web_driver)
 
         # Find all flat offers displayed on current page
-        LOG.info(color_me.cyan("Looking for flats"))
+        LOG.info(color_me.cyan("👀 Looking for flats"))
         all_flats = find_flats(web_driver)
         if not all_flats:
-            LOG.info(color_me.cyan("Currently no flats available 😔"))
+            LOG.info(color_me.cyan("😔 Currently no flats available"))
             time.sleep(int(refresh_internal) * 60)
             continue
 
-        LOG.info(color_me.green(f"Found {len(all_flats)} flat(s) in total"))
+        LOG.info(color_me.green(f"💡 Found {len(all_flats)} flat(s) in total"))
 
         # Save locally
         if not test:
@@ -412,14 +420,14 @@ def process_flats(
                     )[0]:
                         LOG.warning(
                             color_me.yellow(
-                                f"Ignoring flat '{flat_obj.title}' because it contains filter keyword(s) --> {misc_operations.contains_filter_keywords(flat_elem, user_profile.filter)[1]}"
+                                f"🙈 Ignoring flat '{flat_obj.title}' because it contains filter keyword(s) --> {misc_operations.contains_filter_keywords(flat_elem, user_profile.filter)[1]}"
                             )
                         )
                         continue
                     else:
                         LOG.info(
                             color_me.cyan(
-                                f"Applying to flat: {flat_obj.title} for '{email}'"
+                                f"📩 Applying to flat: {flat_obj.title} for '{email}'"
                             )
                         )
                         apply_to_flat(
@@ -434,7 +442,7 @@ def process_flats(
                         io_operations.write_log_file(
                             constants.log_file_path, email, flat_obj
                         )
-                        LOG.info(color_me.green("Done!"))
+                        LOG.info(color_me.green("✅ Done!"))
                         time.sleep(1.5)
                         web_driver.get(start_url)
                         time.sleep(1.5)
@@ -444,7 +452,7 @@ def process_flats(
                 else:
                     LOG.warning(
                         color_me.yellow(
-                            f"Oops, we already applied for flat: {flat_obj.title}!"
+                            f"🚫 Oops, we already applied for flat: {flat_obj.title}!"
                         )
                     )
                     continue
@@ -460,4 +468,4 @@ def process_flats(
         else:
             time.sleep(1.5)
 
-        LOG.info(color_me.cyan("Reloading main page"))
+        LOG.info(color_me.cyan("🔄 Reloading main page"))

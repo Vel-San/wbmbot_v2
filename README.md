@@ -181,8 +181,8 @@ As of now, there are no timeouts, bot checks, or captchas on the website (which 
 - [X] CI/CD for Github
 - [X] Fix test-data
 - [X] Change "successful_applications.txt" to JSON type
+- [X] Automatically detect if internet network connection is down and pause/restart once back
 - [ ] **HIGH PRIORITY** Add an `include only` filter for **zimmer numbers**, **rent cost** & **size**
 - [ ] ~~Add support for multi user wbm_config files~~
 - [ ] Add "excluded_applications.json" that shows all applications that were excluded by the filter
-- [ ] Automatically detect if internet network connection is down and pause/restart once back
 - [ ] Make an compiled exec of the bot using pyinstaller
