@@ -7,6 +7,8 @@
 
 ![Code Format](https://img.shields.io/badge/CODE%20FORMAT-BLACK-black?style=flat-square&logo=python)
 
+![Alt](https://repobeats.axiom.co/api/embed/ab658dc363a9401ed4e7171a5442d8e1c1fe585b.svg "Repobeats analytics image")
+
 - [WBMBOT\_v2](#wbmbot_v2)
   - [Prerequisites](#prerequisites)
   - [Installation](#installation)
