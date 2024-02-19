@@ -61,16 +61,16 @@ if __name__ == "__main__":
     LOG = color_me.create_logger()
 
     # Create ChromeDriver
-    LOG.info(color_me.cyan("🚀 Initializing Script"))
-    LOG.info(color_me.cyan("🔎 Checking for internet connection"))
+    LOG.info(color_me.cyan("Initializing Script 🚀"))
+    LOG.info(color_me.cyan("Checking for internet connection 🔎"))
     while True:
         if not misc_operations.check_internet_connection():
             LOG.error(
-                color_me.red("⚠️  No internet connection found. Retrying in 10 seconds!")
+                color_me.red("No internet connection found. Retrying in 10 seconds ⚠️")
             )
             time.sleep(10)
         else:
-            LOG.info(color_me.green("🟢 Online!"))
+            LOG.info(color_me.green("Online 🟢"))
             break
 
     chrome_driver_instance = cdc.ChromeDriverConfigurator(args.headless, args.test)
@@ -93,7 +93,7 @@ if __name__ == "__main__":
     current_page = 1
     previous_page = 1
     page_changed = False
-    LOG.info(color_me.cyan(f"🔗 Connecting to '{start_url}'"))
+    LOG.info(color_me.cyan(f"Connecting to '{start_url}' 🔗"))
 
     webDriverOperations.process_flats(
         web_driver,

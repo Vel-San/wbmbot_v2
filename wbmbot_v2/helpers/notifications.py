@@ -24,7 +24,7 @@ def send_email_notification(
     if not constants.email_password:
         LOG.warning(
             color_me.yellow(
-                f"🚧 E-mail password not found in the ENV variables. I will not be able to send you e-mails!"
+                f"E-mail password not found in the ENV variables. I will not be able to send you e-mails 🚧"
             )
         )
         return
@@ -32,7 +32,7 @@ def send_email_notification(
     if "@outlook.com" not in send_from:
         LOG.warning(
             color_me.yellow(
-                f"🚧 Notifications e-mail doesn't seem be of '@outlook.com' domain, skipping notifications!"
+                f"Notifications e-mail doesn't seem be of '@outlook.com' domain, skipping notifications 🚧"
             )
         )
         return
@@ -56,11 +56,7 @@ def send_email_notification(
             yag.send(to=send_to, subject=subject, contents=body)
 
         LOG.info(
-            color_me.green(f"✅ Email notification sent successfully to '{send_to}'")
+            color_me.green(f"Email notification sent successfully to '{send_to}' ✅")
         )
     except Exception as e:
-        LOG.error(
-            color_me.red(
-                f"❌ Failed to send email notification to '{send_to}' | {str(e)}"
-            )
-        )
+        LOG.error(color_me.red(f"Failed to send email notification to '{send_to}' ❌"))
