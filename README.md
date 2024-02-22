@@ -33,9 +33,7 @@
 
 # WBMBOT_v2
 
-```
-An improved work-in-progress (WIP) and fully refactored version of the original [WBMBOT by David Fischer](https://github.com/fischer-hub/wbmbot).
-```
+> An improved work-in-progress (WIP) and fully refactored version of the original [WBMBOT by David Fischer](https://github.com/fischer-hub/wbmbot).
 
 WBMBOT_v2 is a Selenium-based Python bot designed to automate the application process for new flats listed by WBM Wohnungsbaugesellschaft Berlin-Mitte GmbH. It prioritizes speed and efficiency to ensure your application is among the first 1000 considered in the random selection process for apartment viewings.
 
