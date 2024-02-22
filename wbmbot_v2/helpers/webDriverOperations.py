@@ -5,11 +5,9 @@ from handlers import flat
 from helpers import constants, notifications
 from httpsWrapper import httpPageDownloader as hpd
 from logger import wbm_logger
-from selenium.common.exceptions import (
-    NoSuchElementException,
-    StaleElementReferenceException,
-    TimeoutException,
-)
+from selenium.common.exceptions import (NoSuchElementException,
+                                        StaleElementReferenceException,
+                                        TimeoutException)
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
@@ -339,7 +337,7 @@ def apply_to_flat(
             email,
             user_profile.notifications_email,
             f"[Applied] {flat_title}",
-            f"Appartment Link: {flat_link}\n\nYour Profile: {user_profile}",
+            f"Appartment Link: {flat_link}\n\nYour Profile:\n\n{user_profile}",
             pdf_path,
         )
 
