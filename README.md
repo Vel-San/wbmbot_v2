@@ -3,7 +3,7 @@
 ![GitHub commit activity](https://img.shields.io/github/commit-activity/m/vel-san/wbmbot_v2?style=flat-square&logo=github&label=COMMITS) ![GitHub repo size](https://img.shields.io/github/repo-size/vel-san/wbmbot_v2?style=flat-square&logo=github&label=REPO%20SIZE) ![GitHub forks](https://img.shields.io/github/forks/vel-san/wbmbot_v2?style=flat-square&logo=github&label=FORKS) ![GitHub Repo stars](https://img.shields.io/github/stars/vel-san/wbmbot_v2?style=flat-square&logo=github&label=STARS)
 
 ![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/vel-san/wbmbot_v2/docker-build-push.yml?style=flat-square&logo=github&label=BUILD%20STATUS)
-![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/vel-san/wbmbot_v2/check_leaks.yml?style=flat-square&logo=github&label=SECRETS%20LEAKS) ![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/vel-san/wbmbot_v2/github-code-scanning%2Fcodeql?style=flat-square&logo=github&label=CODE%20QUALITY)
+![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/vel-san/wbmbot_v2/check-leaks.yml?style=flat-square&logo=github&label=SECRETS%20LEAKS) ![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/vel-san/wbmbot_v2/github-code-scanning%2Fcodeql?style=flat-square&logo=github&label=CODE%20QUALITY)
 
 ![Code Format](https://img.shields.io/badge/CODE%20FORMAT-BLACK-black?style=flat-square&logo=python)
 
