@@ -63,7 +63,7 @@ if __name__ == "__main__":
     # Create ChromeDriver
     LOG.info(
         color_me.cyan(
-            f"Initializing Script (v{constants.bot_version}) (Headless? {args.args.headless}) 🚀"
+            f"Initializing Script (v{constants.bot_version}) (Headless? {args.headless}) 🚀"
         )
     )
     LOG.info(color_me.cyan("Checking for internet connection 🔎"))
