@@ -7,7 +7,7 @@
 
 ![Code Format](https://img.shields.io/badge/CODE%20FORMAT-BLACK-black?style=flat-square&logo=python)
 
-![Static Badge](https://img.shields.io/badge/BOT_VERSION-v1.0.0-teal?style=flat-square)
+![GitHub Release](https://img.shields.io/github/v/release/vel-san/wbmbot_v2?sort=semver&display_name=tag&style=flat-square&logo=semver&label=BOT%20VERSION&color=teal)
 
 ![Alt](https://repobeats.axiom.co/api/embed/ab658dc363a9401ed4e7171a5442d8e1c1fe585b.svg "Repobeats analytics image")
 
