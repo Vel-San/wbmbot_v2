@@ -7,6 +7,10 @@ on:
     paths:
       - 'ci/**'
       - 'wbmbot_v2/**'
+  workflow_run:
+    workflows: ["Release and Auto Change Log"]
+    types:
+      - completed
 
 jobs:
   build-and-push:
@@ -16,6 +20,10 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
+      - name: Get latest tag
+        id: latest_tag
+        run: echo "::set-output name=TAG::$(git describe --abbrev=0 --tags || echo '')"
+
       - name: Login to Docker Hub
         uses: docker/login-action@v2
         with:
@@ -23,7 +31,11 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
 
       - name: Build Docker image
-        run: docker build -t vel7an/wbmbot_v2 -f ci/docker/Dockerfile .
+        if: steps.latest_tag.outputs.TAG != ''
+        run: docker build -t vel7an/wbmbot_v2:${{ steps.latest_tag.outputs.TAG }} -t vel7an/wbmbot_v2:latest -f ci/docker/Dockerfile .
 
       - name: Push Docker image to Docker Hub
-        run: docker push vel7an/wbmbot_v2
+        if: steps.latest_tag.outputs.TAG != ''
+        run: |
+          docker push vel7an/wbmbot_v2:${{ steps.latest_tag.outputs.TAG }}
+          docker push vel7an/wbmbot_v2:latest

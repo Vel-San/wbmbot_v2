@@ -5,9 +5,11 @@ from handlers import flat
 from helpers import constants, notifications
 from httpsWrapper import httpPageDownloader as hpd
 from logger import wbm_logger
-from selenium.common.exceptions import (NoSuchElementException,
-                                        StaleElementReferenceException,
-                                        TimeoutException)
+from selenium.common.exceptions import (
+    NoSuchElementException,
+    StaleElementReferenceException,
+    TimeoutException,
+)
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait

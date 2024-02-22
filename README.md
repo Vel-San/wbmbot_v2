@@ -7,6 +7,8 @@
 
 ![Code Format](https://img.shields.io/badge/CODE%20FORMAT-BLACK-black?style=flat-square&logo=python)
 
+![Static Badge](https://img.shields.io/badge/BOT_VERSION-v1.0.0-teal?style=flat-square)
+
 ![Alt](https://repobeats.axiom.co/api/embed/ab658dc363a9401ed4e7171a5442d8e1c1fe585b.svg "Repobeats analytics image")
 
 - [WBMBOT\_v2](#wbmbot_v2)
@@ -21,6 +23,8 @@
     - [Build](#build)
     - [Pull](#pull)
     - [Run](#run)
+      - [Without e-mail notifications](#without-e-mail-notifications)
+      - [With e-mail notifications](#with-e-mail-notifications)
   - [Filtering Strategy](#filtering-strategy)
   - [Logging](#logging)
   - [Additional Information](#additional-information)
@@ -29,7 +33,9 @@
 
 # WBMBOT_v2
 
-> An improved work-in-progress (WIP) and fully refactored version of the original [WBMBOT by David Fischer](https://github.com/fischer-hub/wbmbot).
+```
+An improved work-in-progress (WIP) and fully refactored version of the original [WBMBOT by David Fischer](https://github.com/fischer-hub/wbmbot).
+```
 
 WBMBOT_v2 is a Selenium-based Python bot designed to automate the application process for new flats listed by WBM Wohnungsbaugesellschaft Berlin-Mitte GmbH. It prioritizes speed and efficiency to ensure your application is among the first 1000 considered in the random selection process for apartment viewings.
 
@@ -94,7 +100,9 @@ To do so, you need to export `EMAIL_PASSWORD` to your environment variables. If 
 
 **NOTE**: Only `@outlook.com` emails are currently supported
 
-> export EMAIL_PASSWORD=(password)
+```bash
+export EMAIL_PASSWORD=<password>
+```
 
 ## Outputs
 
@@ -142,8 +150,21 @@ If running for the first time, use `-it` to setup your config, if you already ha
 
 If you want to send emails as well to yourself as notifications, please add `-e "EMAIL_PASSWORD=<password>"` to the command
 
+#### Without e-mail notifications
+
 ```bash
 docker run -it \
+    -v /PATH_HERE/offline_viewings:/home/offline_viewings \
+    -v /PATH_HERE/logging:/home/logging \
+    -v /PATH_HERE/configs:/home/configs \
+    vel7an/wbmbot_v2:latest
+```
+
+#### With e-mail notifications
+
+```bash
+docker run -it \
+    -e "EMAIL_PASSWORD=<password>" \
     -v /PATH_HERE/offline_viewings:/home/offline_viewings \
     -v /PATH_HERE/logging:/home/logging \
     -v /PATH_HERE/configs:/home/configs \

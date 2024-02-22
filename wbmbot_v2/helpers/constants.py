@@ -1,6 +1,9 @@
 import datetime as dt
 import os
 
+# Bot version (MAJOR.MINOR.PATCH)
+bot_version = "1.0.0"
+
 # Today
 today = dt.date.today()
 # Now

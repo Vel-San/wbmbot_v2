@@ -1,0 +1,29 @@
+name: Release and Auto Change Log
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+jobs:
+  release-and-create-changelog:
+    name: Automatic Release & Changelog Creator
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Auto Changelog
+        id: changelog
+        uses: ardalanamini/auto-changelog@v4.0.1
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v0.1.15
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          body: |
+            ${{ steps.changelog.outputs.changelog }}
