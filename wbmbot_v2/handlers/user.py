@@ -69,3 +69,22 @@ class User:
             self.wbs_num = "WBS 240"
         else:
             self.wbs_num = ""
+
+    def __str__(self):
+        output = ""
+        output += f"First Name: {self.first_name}\n"
+        output += f"Last Name: {self.last_name}\n"
+        output += f"Sex: {self.sex}\n"
+        output += f"Street: {self.street}\n"
+        output += f"ZIP Code: {self.zip_code}\n"
+        output += f"City: {self.city}\n"
+        output += f"Emails: {', '.join(self.emails)}\n"
+        output += f"Notifications Email: {self.notifications_email}\n"
+        output += f"Phone: {self.phone}\n"
+        output += f"WBS: {'Yes' if self.wbs else 'No'}\n"
+        output += f"WBS Date: {self.wbs_date}\n"
+        output += f"WBS Rooms: {self.wbs_rooms}\n"
+        output += f"WBS Special Housing Needs: {'Yes' if self.wbs_special_housing_needs else 'No'}\n"
+        output += f"WBS Number: {self.wbs_num}\n"
+        output += f"Filters: {', '.join(self.filter)}\n"
+        return output
