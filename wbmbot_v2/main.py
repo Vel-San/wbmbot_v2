@@ -61,7 +61,11 @@ if __name__ == "__main__":
     LOG = color_me.create_logger()
 
     # Create ChromeDriver
-    LOG.info(color_me.cyan(f"Initializing Script (v{constants.bot_version}) 🚀"))
+    LOG.info(
+        color_me.cyan(
+            f"Initializing Script (v{constants.bot_version}) (Headless? {args.args.headless}) 🚀"
+        )
+    )
     LOG.info(color_me.cyan("Checking for internet connection 🔎"))
     while True:
         if not misc_operations.check_internet_connection():
