@@ -2,6 +2,7 @@ import logging
 import os
 import warnings
 
+import requests
 from pywebcopy import save_webpage
 from utility import io_operations
 
