@@ -34,11 +34,9 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
 
       - name: Build Docker image
-        if: $TAG != ''
         run: docker build -t vel7an/wbmbot_v2:${TAG} -t vel7an/wbmbot_v2:latest -f ci/docker/Dockerfile .
 
       - name: Push Docker image to Docker Hub
-        if: $TAG != ''
         run: |
           docker push vel7an/wbmbot_v2:${TAG}
           docker push vel7an/wbmbot_v2:latest
