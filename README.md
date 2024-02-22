@@ -1,13 +1,13 @@
 ![Docker Pulls](https://img.shields.io/docker/pulls/vel7an/wbmbot_v2?style=flat-square&logo=docker&label=DOCKER%20PULLS) ![Docker Image Size](https://img.shields.io/docker/image-size/vel7an/wbmbot_v2?style=flat-square&logo=docker&label=IMAGE%20SIZE)
 
-![GitHub commit activity](https://img.shields.io/github/commit-activity/m/vel-san/wbmbot_v2?style=flat-square&logo=github&label=COMMITS) ![GitHub repo size](https://img.shields.io/github/repo-size/vel-san/wbmbot_v2?style=flat-square&logo=github&label=REPO%20SIZE) ![GitHub forks](https://img.shields.io/github/forks/vel-san/wbmbot_v2?style=flat-square&logo=github&label=FORKS) ![GitHub Repo stars](https://img.shields.io/github/stars/vel-san/wbmbot_v2?style=flat-square&logo=github&label=STARS)
+![GitHub commit activity](https://img.shields.io/github/commit-activity/m/vel-san/wbmbot_v2?style=flat-square&logo=github&label=COMMITS) ![GitHub repo size](https://img.shields.io/github/repo-size/vel-san/wbmbot_v2?style=flat-square&logo=github&label=REPO%20SIZE) ![GitHub forks](https://img.shields.io/github/forks/vel-san/wbmbot_v2?style=flat-square&logo=github&label=FORKS) ![GitHub Repo stars](https://img.shields.io/github/stars/vel-san/wbmbot_v2?style=flat-square&logo=github&label=STARS) ![GitHub commits since latest release](https://img.shields.io/github/commits-since/vel-san/wbmbot_v2/latest?sort=date&style=flat-square&logo=github&label=COMMITS%20SINCE%20LAST%20RELEASE)
 
 ![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/vel-san/wbmbot_v2/docker-build-push.yml?style=flat-square&logo=github&label=BUILD%20STATUS)
 ![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/vel-san/wbmbot_v2/check-leaks.yml?style=flat-square&logo=github&label=SECRETS%20LEAKS) ![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/vel-san/wbmbot_v2/github-code-scanning%2Fcodeql?style=flat-square&logo=github&label=CODE%20QUALITY)
 
 ![Code Format](https://img.shields.io/badge/CODE%20FORMAT-BLACK-black?style=flat-square&logo=python)
 
-![GitHub Release](https://img.shields.io/github/v/release/vel-san/wbmbot_v2?sort=semver&display_name=tag&style=flat-square&logo=semver&label=BOT%20VERSION&color=teal)
+![GitHub Release](https://img.shields.io/github/v/release/vel-san/wbmbot_v2?sort=date&display_name=tag&style=flat-square&logo=semver&label=BOT%20VERSION&color=teal)
 
 ![Alt](https://repobeats.axiom.co/api/embed/ab658dc363a9401ed4e7171a5442d8e1c1fe585b.svg "Repobeats analytics image")
 
