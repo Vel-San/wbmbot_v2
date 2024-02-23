@@ -53,8 +53,12 @@ def parse_args():
     return parser.parse_args()
 
 
-# * Script Starts Here
-if __name__ == "__main__":
+def main():
+    """
+    Initialize & starts the bot
+    If the bot crashes, it will attempt to restart itself
+    """
+
     args = parse_args()
 
     color_me = wbm_logger.ColoredLogger(__appname__)
@@ -99,15 +103,26 @@ if __name__ == "__main__":
     page_changed = False
     LOG.info(color_me.cyan(f"Connecting to '{start_url}' 🔗"))
 
-    webDriverOperations.process_flats(
-        web_driver,
-        user_profile,
-        start_url,
-        current_page,
-        previous_page,
-        page_changed,
-        args.interval,
-        args.test,
-    )
+    try:
+        while True:
+            webDriverOperations.process_flats(
+                web_driver,
+                user_profile,
+                start_url,
+                current_page,
+                previous_page,
+                page_changed,
+                args.interval,
+                args.test,
+            )
+    except Exception as e:
+        LOG.error(color_me.red(f"Bot has crashed... Attempting to restart it now! ❤️‍🩹"))
+        # Wait for a few seconds before restarting
+        time.sleep(5)
+        # Restart the script
+        main()
 
-# driver.quit()
+
+# * Script Starts Here
+if __name__ == "__main__":
+    main()
