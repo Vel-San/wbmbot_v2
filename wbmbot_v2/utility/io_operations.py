@@ -4,7 +4,7 @@ import re
 
 from helpers import constants
 from logger import wbm_logger
-from utility import interaction
+from utility import interaction, misc_operations
 
 __appname__ = os.path.splitext(os.path.basename(__file__))[0]
 color_me = wbm_logger.ColoredLogger(__appname__)
@@ -91,9 +91,9 @@ def write_log_file(log_file: str, email: str, flat_obj):
                 "title": flat_obj.title,
                 "street": flat_obj.street,
                 "zip_code": flat_obj.zip_code,
-                "rent": re.sub(r"(\D)(\d)", r"\1 \2", flat_obj.total_rent),
-                "size": re.sub(r"(\D)(\d)", r"\1 \2", flat_obj.size),
-                "rooms": re.sub(r"(\D)(\d)", r"\1 \2", flat_obj.rooms),
+                "rent": misc_operations.convert_rent(flat_obj.total_rent),
+                "size": misc_operations.convert_size(flat_obj.size),
+                "rooms": misc_operations.get_zimmer_count(flat_obj.rooms),
                 "wbs?": flat_obj.wbs,
             }
     else:
@@ -106,9 +106,9 @@ def write_log_file(log_file: str, email: str, flat_obj):
                 "title": flat_obj.title,
                 "street": flat_obj.street,
                 "zip_code": flat_obj.zip_code,
-                "rent": re.sub(r"(\D)(\d)", r"\1 \2", flat_obj.total_rent),
-                "size": re.sub(r"(\D)(\d)", r"\1 \2", flat_obj.size),
-                "rooms": re.sub(r"(\D)(\d)", r"\1 \2", flat_obj.rooms),
+                "rent": misc_operations.convert_rent(flat_obj.total_rent),
+                "size": misc_operations.convert_size(flat_obj.size),
+                "rooms": misc_operations.get_zimmer_count(flat_obj.rooms),
                 "wbs?": flat_obj.wbs,
             }
         }
@@ -131,7 +131,7 @@ def create_directory_if_not_exists(directory_path: str) -> None:
     try:
         os.makedirs(directory_path, exist_ok=True)
     except OSError as e:
-        LOG.error(color_me.red(f"Error to create directory ({directory_path}) ❌"))
+        LOG.error(color_me.red(f"Failed to create directory ({directory_path}) ❌"))
 
 
 def check_flat_already_applied(log_file: str, email: str, flat_obj):

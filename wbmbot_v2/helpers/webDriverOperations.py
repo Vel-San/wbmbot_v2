@@ -410,39 +410,68 @@ def process_flats(
                     constants.log_file_path, email, flat_obj
                 ):
                     if misc_operations.contains_filter_keywords(
-                        flat_elem, user_profile.filter
+                        flat_elem, user_profile.exclude
                     )[0]:
                         LOG.warning(
                             color_me.yellow(
-                                f"Ignoring flat '{flat_obj.title}' because it contains filter keyword(s) --> {misc_operations.contains_filter_keywords(flat_elem, user_profile.filter)[1]} 🙈"
+                                f"Ignoring flat '{flat_obj.title}' because it contains exclude keyword(s) --> {misc_operations.contains_filter_keywords(flat_elem, user_profile.exclude)[1]} 🙈"
                             )
                         )
                         continue
-                    else:
-                        LOG.info(
-                            color_me.cyan(
-                                f"Applying to flat: {flat_obj.title} for '{email}' 📩"
+                    if not misc_operations.verify_flat_rent(
+                        misc_operations.convert_rent(flat_obj.total_rent),
+                        user_profile.flat_rent_below,
+                    ):
+                        LOG.warning(
+                            color_me.yellow(
+                                f"Ignoring flat '{flat_obj.title}' because the rent doesn't match our criteria --> Flat Rent: {misc_operations.convert_rent(flat_obj.total_rent)} € | User wants it below: {user_profile.flat_rent_below} € 🙈"
                             )
                         )
-                        apply_to_flat(
-                            web_driver,
-                            flat_elem,
-                            i,
-                            flat_obj.title,
-                            user_profile,
-                            email,
-                            test,
+                        continue
+                    if not misc_operations.verify_flat_size(
+                        misc_operations.convert_size(flat_obj.size),
+                        user_profile.flat_size_above,
+                    ):
+                        LOG.warning(
+                            color_me.yellow(
+                                f"Ignoring flat '{flat_obj.title}' because the size doesn't match our criteria --> Flat Size: {misc_operations.convert_size(flat_obj.size)} m² | User wants it above: {user_profile.flat_size_above} m² 🙈"
+                            )
                         )
-                        io_operations.write_log_file(
-                            constants.log_file_path, email, flat_obj
+                        continue
+                    if not misc_operations.verify_flat_rooms(
+                        misc_operations.get_zimmer_count(flat_obj.rooms),
+                        user_profile.flat_rooms_above,
+                    ):
+                        LOG.warning(
+                            color_me.yellow(
+                                f"Ignoring flat '{flat_obj.title}' because the rooms don't match our criteria --> Flat Rooms: {misc_operations.get_zimmer_count(flat_obj.rooms)} | User wants it above: {user_profile.flat_rooms_above} 🙈"
+                            )
                         )
-                        LOG.info(color_me.green("Done ✅"))
-                        time.sleep(1.5)
-                        web_driver.get(start_url)
-                        time.sleep(1.5)
-                        # Refresh Flat Elements for each email iteration to avoid staleness
-                        all_flats = find_flats(web_driver)
-                        flat_elem = all_flats[i]
+                        continue
+                    LOG.info(
+                        color_me.cyan(
+                            f"Applying to flat: {flat_obj.title} for '{email}' 📩"
+                        )
+                    )
+                    apply_to_flat(
+                        web_driver,
+                        flat_elem,
+                        i,
+                        flat_obj.title,
+                        user_profile,
+                        email,
+                        test,
+                    )
+                    io_operations.write_log_file(
+                        constants.log_file_path, email, flat_obj
+                    )
+                    LOG.info(color_me.green("Done ✅"))
+                    time.sleep(1.5)
+                    web_driver.get(start_url)
+                    time.sleep(1.5)
+                    # Refresh Flat Elements for each email iteration to avoid staleness
+                    all_flats = find_flats(web_driver)
+                    flat_elem = all_flats[i]
                 else:
                     LOG.warning(
                         color_me.yellow(

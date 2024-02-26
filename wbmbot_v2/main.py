@@ -117,6 +117,7 @@ def main():
             )
     except Exception as e:
         LOG.error(color_me.red(f"Bot has crashed... Attempting to restart it now! ❤️‍🩹"))
+        LOG.error(color_me.red(f"Crash reason: {e}"))
         # Wait for a few seconds before restarting
         time.sleep(5)
         # Restart the script

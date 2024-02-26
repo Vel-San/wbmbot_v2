@@ -5,14 +5,20 @@
     "emails": [
         "random_user@outlook.com"
     ],
-    "street": "ABC. 123",
-    "zip_code": "11223",
+    "notifications_email": "random_user@outlook.com",
+    "street": "No-Add Str. 123",
+    "zip_code": "12345",
     "city": "Berlin",
-    "phone": "49112233",
+    "phone": "11223344",
     "wbs": "yes",
-    "wbs_date": "01/01/2000",
-    "wbs_num": "140",
-    "wbs_rooms": "3",
+    "wbs_date": "23/04/1972",
+    "wbs_num": "WBS 160",
+    "wbs_rooms": "2",
     "wbs_special_housing_needs": "no",
-    "filter": ["1-zimmer"]
+    "exclude": [
+        "1-zimmer"
+    ],
+    "flat_rent_below": "1200",
+    "flat_size_above": "45",
+    "flat_rooms_above": "3"
 }

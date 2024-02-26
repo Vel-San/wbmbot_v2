@@ -75,24 +75,34 @@ def setup_wbm_config():
         data["wbs_rooms"] = ""
         data["wbs_special_housing_needs"] = ""
 
-    # Collect keywords to filter out specific flats
+    # Collect keywords to exclude out specific flats
     if (
         input(
             "Do you want to enter keywords to exclude specific flats from the search results? Please type yes / no: "
         ).lower()
         == "yes"
     ):
-        filters = []
+        exclude = []
         while True:
             keyword = input(
                 "Please enter a keyword and confirm with enter, type 'exit' to exit: "
             ).lower()
             if keyword == "exit":
                 break
-            filters.append(keyword)
-        data["filter"] = filters
+            exclude.append(keyword)
+        data["exclude"] = exclude
     else:
-        data["filter"] = []
+        data["exclude"] = []
+
+    data["flat_rent_below"] = input(
+        "Please input the 'Upper Limit/Max' Rent for a flat (format: 1234): "
+    )
+    data["flat_size_above"] = input(
+        "Please input the 'Bottom Limit/Minimum' Size for a flat (format: 123): "
+    )
+    data["flat_rooms_above"] = input(
+        "Please input the 'Bottom Limit/Minimum' Rooms for a flat (format: 1): "
+    )
 
     # Log the completion of data collection
     LOG.info(color_me.green("Done! Writing config file... ✅"))

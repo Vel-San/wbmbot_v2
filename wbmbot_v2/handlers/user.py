@@ -19,8 +19,11 @@ class User:
         wbs (bool): A boolean indicating if the user has a Wohnberechtigungsschein (WBS).
         wbs_date (str): The date associated with the user's WBS, formatted without slashes.
         wbs_rooms (str): The number of rooms associated with the user's WBS.
-        filter (list of str): A list of filter preferences for the user.
+        exclude (list of str): A list of exclude preferences for the user.
         wbs_num (str): A string representing the user's WBS number category.
+        flat_rent_below (str): A string representing the user's rent upper limit.
+        flat_size_above (str): A string representing the user's flat size bottom limit.
+        flat_rooms_above (str): A string representing the user's flat rooms bottom limit.
     """
 
     def __init__(self, json_config):
@@ -51,7 +54,7 @@ class User:
         self.wbs_special_housing_needs = (
             "yes" in self.config.get("wbs_special_housing_needs", "").lower()
         )
-        self.filter = self.config.get("filter", [])
+        self.exclude = self.config.get("exclude", [])
 
         # Determine the WBS number category based on the provided wbs_num value
         self.wbs_num = self.config.get("wbs_num", "")
@@ -70,6 +73,11 @@ class User:
         else:
             self.wbs_num = ""
 
+        # Setup user filters to be "included" e.g. Apply to flats with rent below XX, Apply to flat with size above XX
+        self.flat_rent_below = self.config.get("flat_rent_below", "")
+        self.flat_size_above = self.config.get("flat_size_above", "")
+        self.flat_rooms_above = self.config.get("flat_rooms_above", "")
+
     def __str__(self):
         output = ""
         output += f"First Name: {self.first_name}\n"
@@ -86,5 +94,8 @@ class User:
         output += f"WBS Rooms: {self.wbs_rooms}\n"
         output += f"WBS Special Housing Needs: {'Yes' if self.wbs_special_housing_needs else 'No'}\n"
         output += f"WBS Number: {self.wbs_num}\n"
-        output += f"Filters: {', '.join(self.filter)}\n"
+        output += f"Exclude: {', '.join(self.exclude)}\n"
+        output += f"Flat Rent Below: {', '.join(self.flat_rent_below)}\n"
+        output += f"Flat Size Above: {', '.join(self.flat_size_above)}\n"
+        output += f"Flat Rooms Above: {', '.join(self.flat_rooms_above)}\n"
         return output

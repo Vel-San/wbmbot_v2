@@ -67,24 +67,30 @@ Alternatively, you can manually create the `configs/wbm_config.json` file with t
 
 ```json
 {
-    "first_name": "JOHN",
-    "last_name": "DOE",
+    "first_name": "John",
+    "last_name": "Doe",
     "sex": "m",
     "emails": [
-        "XXX@protonmail.com",
-        "YYY@protonmail.com"
+        "random_user@outlook.com"
     ],
-    "notifications_email": "ZZZ@outlook.com",
-    "street": "Doner-Str. 123",
+    "notifications_email": "random_user@outlook.com",
+    "street": "No-Add Str. 123",
     "zip_code": "12345",
     "city": "Berlin",
-    "phone": "4911223344",
+    "phone": "11223344",
     "wbs": "yes",
     "wbs_date": "23/04/1972",
     "wbs_num": "WBS 160",
     "wbs_rooms": "2",
     "wbs_special_housing_needs": "no",
-    "filter": ["wbs", "2-zimmer", "2 zimmer", "2 zim", "2-zim"]
+    "exclude": [
+        "wbs",
+        "2-zimmer",
+        "1-zimmer"
+    ],
+    "flat_rent_below": "600",
+    "flat_size_above": "55",
+    "flat_rooms_above": "1"
 }
 ```
 
@@ -171,7 +177,15 @@ docker run -it \
 
 ## Filtering Strategy
 
-The filter list is designed to exclude listings based on specified keywords. Simply add your exclusion keywords to the list.
+The exclude list is designed to exclude listings based on specified keywords. Simply add your exclusion keywords to the list.
+
+Alternatively you can also use the 3 variables in the config:
+
+> "flat_rent_below": "600"
+> "flat_size_above": "55"
+> "flat_rooms_above": "1"
+
+Where the bot will "include" your options only. If the rent/size/rooms is equal or below/above then it will consider the flat to apply.
 
 ## Logging
 
@@ -201,7 +215,7 @@ As of now, there are no timeouts, bot checks, or captchas on the website (which 
 - [X] Fix test-data
 - [X] Change "successful_applications.txt" to JSON type
 - [X] Automatically detect if internet network connection is down and pause/restart once back
-- [ ] **HIGH PRIORITY** Add an `include only` filter for **zimmer numbers**, **rent cost** & **size**
+- [X] **HIGH PRIORITY** Add an `include only` filter for **zimmer numbers**, **rent cost** & **size**
 - [ ] ~~Add support for multi user wbm_config files~~
 - [ ] Add "excluded_applications.json" that shows all applications that were excluded by the filter
 - [ ] Make an compiled exec of the bot using pyinstaller
