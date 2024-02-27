@@ -12,6 +12,7 @@
 ![Alt](https://repobeats.axiom.co/api/embed/ab658dc363a9401ed4e7171a5442d8e1c1fe585b.svg "Repobeats analytics image")
 
 - [WBMBOT\_v2](#wbmbot_v2)
+  - [IMPORTANT DISCLAIMER](#important-disclaimer)
   - [Prerequisites](#prerequisites)
   - [Installation](#installation)
   - [Quick Start](#quick-start)
@@ -35,11 +36,24 @@
 
 > An improved work-in-progress (WIP) and fully refactored version of the original [WBMBOT by David Fischer](https://github.com/fischer-hub/wbmbot).
 
-WBMBOT_v2 is a Selenium-based Python bot designed to automate the application process for new flats listed by WBM Wohnungsbaugesellschaft Berlin-Mitte GmbH. It prioritizes speed and efficiency to ensure your application is among the first 1000 considered in the random selection process for apartment viewings.
+WBMBOT_v2 is a Selenium-based Python bot designed to automate the application process for new flats listed by WBM (Wohnungsbaugesellschaft Berlin-Mitte) GmbH. It prioritizes speed and efficiency to ensure your application is among the first to be considered in the random selection process for apartment viewings.
+
+## IMPORTANT DISCLAIMER
+
+The more you share this bot, the "less" your chances of finding an apartment will be. You do the math.
+
+<details>
+<summary>IN CASE YOU DON'T GET IT</summary>
+
+>**Please do not over-share this bot to maximize your chances**
+
+</details>
+
 
 ## Prerequisites
 
 - Python 3.10 or higher
+- Ubuntu Linux or Windows Docker (The bot didn't work properly on MacOS/Amazon Hosted instances)
 
 ## Installation
 
@@ -182,10 +196,12 @@ The exclude list is designed to exclude listings based on specified keywords. Si
 Alternatively you can also use the 3 variables in the config:
 
 > "flat_rent_below": "600"
+>
 > "flat_size_above": "55"
+>
 > "flat_rooms_above": "1"
 
-Where the bot will "include" your options only. If the rent/size/rooms is equal or below/above then it will consider the flat to apply.
+Where the bot will "include" your options only. If the rent/size/rooms is *equal* **OR** *below/above* then it will consider the flat to apply.
 
 ## Logging
 
@@ -205,6 +221,7 @@ As of now, there are no timeouts, bot checks, or captchas on the website (which 
 
 - [X] **HIGH PRIORITY** Fix form filling
 - [X] **HIGH PRIORITY** Fix `next page` logic
+- [X] **HIGH PRIORITY** Add an `include only` filter for **zimmer numbers**, **rent cost** & **size**
 - [X] Add the reason if ignoring a flat (To make sure your filters are working properly) in logging
 - [X] Add color_printer class into the works with the logger
 - [X] Notify via e-mail whenever the bot applies to an application
@@ -215,7 +232,6 @@ As of now, there are no timeouts, bot checks, or captchas on the website (which 
 - [X] Fix test-data
 - [X] Change "successful_applications.txt" to JSON type
 - [X] Automatically detect if internet network connection is down and pause/restart once back
-- [X] **HIGH PRIORITY** Add an `include only` filter for **zimmer numbers**, **rent cost** & **size**
 - [ ] ~~Add support for multi user wbm_config files~~
 - [ ] Add "excluded_applications.json" that shows all applications that were excluded by the filter
-- [ ] Make an compiled exec of the bot using pyinstaller
+- [ ] Make a compiled exec of the bot using pyinstaller
