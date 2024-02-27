@@ -64,8 +64,8 @@ def main():
     color_me = wbm_logger.ColoredLogger(__appname__)
     LOG = color_me.create_logger()
 
-    # Show Intro Banner, use 'print' instead of LOG to make it prettier
-    print(f"{constants.intro_banner}")
+    # Show Intro Banner
+    LOG.info(color_me.cyan(f"{constants.intro_banner}"))
 
     # Create ChromeDriver
     LOG.info(
