@@ -2,7 +2,7 @@ import datetime as dt
 import os
 
 # Bot version (MAJOR.MINOR.PATCH)
-bot_version = "1.1.0"
+bot_version = "1.1.1"
 
 # Today
 today = dt.date.today()
@@ -30,3 +30,17 @@ offline_apartment_path = f"{os.getcwd()}/offline_viewings/apartments_expose_pdfs
 # URLs
 wbm_url = "https://www.wbm.de/wohnungen-berlin/angebote/"
 test_wbm_url = f"file://{os.getcwd()}/test-data/angebote.html"
+
+# Intro Banner
+
+intro_banner = """
+ __      _____ __  __ ___  ___ _____       ___
+ \ \    / / _ )  \/  | _ )/ _ \_   _| __ _|_  )
+  \ \/\/ /| _ \ |\/| | _ \ (_) || |   \ V // /
+   \_/\_/ |___/_|  |_|___/\___/ |_|    \_//___|
+  _          __   __   _
+ | |__ _  _  \ \ / /__| |
+ | '_ \ || |  \ V / -_) |
+ |_.__/\_, |   \_/\___|_|
+       |__/
+"""
