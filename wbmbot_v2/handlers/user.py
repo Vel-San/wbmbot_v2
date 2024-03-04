@@ -95,7 +95,7 @@ class User:
         output += f"WBS Special Housing Needs: {'Yes' if self.wbs_special_housing_needs else 'No'}\n"
         output += f"WBS Number: {self.wbs_num}\n"
         output += f"Exclude: {', '.join(self.exclude)}\n"
-        output += f"Flat Rent Below: {', '.join(self.flat_rent_below)}\n"
-        output += f"Flat Size Above: {', '.join(self.flat_size_above)}\n"
-        output += f"Flat Rooms Above: {', '.join(self.flat_rooms_above)}\n"
+        output += f"Flat Rent Below: {self.flat_rent_below}\n"
+        output += f"Flat Size Above: {self.flat_size_above}\n"
+        output += f"Flat Rooms Above: {self.flat_rooms_above}\n"
         return output
