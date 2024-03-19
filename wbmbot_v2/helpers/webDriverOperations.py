@@ -321,7 +321,8 @@ def apply_to_flat(
 
     # Find and click "Ansehen" button on current flat
     flat_link = ansehen_btn(web_driver, flat_element, flat_index)
-
+    if "seniorenwohnungen" in flat_link:
+        return False
     # Fill out application form on current flat using info stored in user object
     fill_form(web_driver, user_profile, email, test)
 
@@ -342,6 +343,8 @@ def apply_to_flat(
             f"Appartment Link: {flat_link}\n\nYour Profile:\n\n{user_profile}",
             pdf_path,
         )
+
+    return True
 
 
 def process_flats(
@@ -448,12 +451,7 @@ def process_flats(
                             )
                         )
                         continue
-                    LOG.info(
-                        color_me.cyan(
-                            f"Applying to flat: {flat_obj.title} for '{email}' 📩"
-                        )
-                    )
-                    apply_to_flat(
+                    applied = apply_to_flat(
                         web_driver,
                         flat_elem,
                         i,
@@ -462,16 +460,28 @@ def process_flats(
                         email,
                         test,
                     )
-                    io_operations.write_log_file(
-                        constants.log_file_path, email, flat_obj
-                    )
-                    LOG.info(color_me.green("Done ✅"))
-                    time.sleep(1.5)
-                    web_driver.get(start_url)
-                    time.sleep(1.5)
-                    # Refresh Flat Elements for each email iteration to avoid staleness
-                    all_flats = find_flats(web_driver)
-                    flat_elem = all_flats[i]
+                    if applied:
+                        LOG.info(
+                            color_me.cyan(
+                                f"Applying to flat: {flat_obj.title} for '{email}' 📩"
+                            )
+                        )
+                        io_operations.write_log_file(
+                            constants.log_file_path, email, flat_obj
+                        )
+                        LOG.info(color_me.green("Done ✅"))
+                        time.sleep(1.5)
+                        web_driver.get(start_url)
+                        time.sleep(1.5)
+                        # Refresh Flat Elements for each email iteration to avoid staleness
+                        all_flats = find_flats(web_driver)
+                        flat_elem = all_flats[i]
+                    else:
+                        LOG.warning(
+                            color_me.yellow(
+                                f"Ignoring flat: {flat_obj.title} because it is for Seniors only ('seniorenwohnungen') 🙈"
+                            )
+                        )
                 else:
                     LOG.warning(
                         color_me.yellow(

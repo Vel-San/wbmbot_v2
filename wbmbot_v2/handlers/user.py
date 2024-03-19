@@ -40,7 +40,9 @@ class User:
         self.sex = (
             "Frau"
             if self.config.get("sex", "") == "f"
-            else "Herr" if self.config.get("sex", "") == "m" else "Offen"
+            else "Herr"
+            if self.config.get("sex", "") == "m"
+            else "Offen"
         )
         self.street = self.config.get("street", "")
         self.zip_code = self.config.get("zip_code", "")
